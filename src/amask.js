@@ -1,6 +1,5 @@
 'use strict';
 
-
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
@@ -15,15 +14,17 @@ export default class AMask {
 		this.placeholder = opt.placeholder || defaultOptions.placeholder;
 	}
 	
+	/* METHODS ----------------------------------------------------- */
+	
 	static version() {
-		return 'version 0.2.1';
+		return 'version 0.2.2';
 	}
 	
-	/**
+	/** calculates what to show in input
 	 * @param {string} value
 	 * @returns {string}
 	 */
-	aMaskCore(value, position)  {
+	aMaskCore(value)  {
 		let bufferArr = [],
 			/** @type {number} */
 			bufferLen = bufferArr.length,
@@ -57,7 +58,6 @@ export default class AMask {
 			}
 			else if (/[\s.\/()-]/.test(pat) ) {
 				bufferArr.push(pat);
-				position++;
 				i--;
 			}
 		}
@@ -66,6 +66,27 @@ export default class AMask {
 		return inference;
 	}
 	
+	/** calculate cursor position
+	 * @param {number} position
+	 * @returns {number}
+	 */
+	calcCursorPosition(position){
+		let specPositions = Array.from(this.pattern, (item, idx)=>{
+			if (/[\s.\/()-]/.test(item) ) {
+				return idx;
+			}
+		}).filter((el)=> !!el);
+		
+		if ( specPositions.includes(position) ) {
+			position++;
+		}
+		return position;
+	}
+	
+	/** handler of keyup event : receives and emits value
+	 * @param {Object} e
+	 * @returns {Object}
+	 * */
 	maskInput(e){
 		if (e.key === 'Backspace' ||
 			e.key === 'ArrowLeft' ||
@@ -78,38 +99,27 @@ export default class AMask {
 			/** @type {string} */
 			value = elem.value,
 			/** @type {number} */
-			pos = elem.selectionEnd,
-			output = this.aMaskCore(value),
-			specPositions;
-			
-		//	calculate cursor position
-		specPositions = Array.from(this.pattern, (item, idx)=>{
-			if (/[\s.\/()-]/.test(item) ) {
-				return idx;
-			}
-		}).filter((el)=> !!el);
+			position = elem.selectionEnd,
+			output,
+			cursorPosition;
 		
-		if ( specPositions.includes(pos) ) {
-			pos++;
-		}
+		output = this.aMaskCore(value);
+		cursorPosition = this.calcCursorPosition(position);
+		
 		
 		/** @type {string} */
 		elem.value = output;
 		elem.focus();
-		elem.setSelectionRange(pos, pos);
+		elem.setSelectionRange(cursorPosition, cursorPosition);
 		
-		return [output, pos];
+		return {output, cursorPosition};
 	}
 	
 	init(){
 		let elemInput = this.elem;
 		elemInput.setAttribute('placeholder', this.aMaskCore(this.placeholder));
 		// elemInput.focus();
-		
-		
 		elemInput.addEventListener('keyup', (e) => this.maskInput(e) );
-		
-		
 	}
 }
 
@@ -139,8 +149,3 @@ function test(){
 if (window.location.hash === '#test') {
 	test();
 }
-
-/*if ( !/[0-9.\/\-()\s]/.test(e.currentTarget.value) ) {
-	console.log('return');
-	return;
-}*/
