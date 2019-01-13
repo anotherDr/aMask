@@ -17,7 +17,7 @@ export default class AMask {
 	/* METHODS ----------------------------------------------------- */
 	
 	static version() {
-		return 'version 0.2.2';
+		return 'version 0.2.3';
 	}
 	
 	/** calculates what to show in input
@@ -102,17 +102,26 @@ export default class AMask {
 			position = elem.selectionEnd,
 			output,
 			cursorPosition;
+			
+		let promise1 = new Promise((resolve, reject)=>{
+			resolve( this.aMaskCore(value) );
+		});
+		let promise2 = new Promise((resolve, reject)=>{
+			resolve( this.calcCursorPosition(position) );
+		});
 		
-		output = this.aMaskCore(value);
-		cursorPosition = this.calcCursorPosition(position);
+		Promise.all([promise1,promise2]).then((result) => {
+			output = result[0];
+			cursorPosition = result[1];
+			/** @type {string} */
+			elem.value = output;
+			elem.focus();
+			elem.setSelectionRange(cursorPosition, cursorPosition);
+			console.log(output, cursorPosition);
+			return {output, cursorPosition};
+		});
 		
 		
-		/** @type {string} */
-		elem.value = output;
-		elem.focus();
-		elem.setSelectionRange(cursorPosition, cursorPosition);
-		
-		return {output, cursorPosition};
 	}
 	
 	init(){

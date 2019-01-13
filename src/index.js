@@ -8,7 +8,3 @@ const params = {
 };
 let amask = new AMask(params);
 amask.init();
-
-/* TEST */
-let test_block = document.body.appendChild( document.createElement('div') );
-test_block.innerHTML = AMask.version();
