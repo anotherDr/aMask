@@ -1,15 +1,16 @@
 'use strict';
-
+const version = '0.2.4';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
+	selector: '.amask'
 };
 
 export default class AMask {
 	
 	constructor( opt = defaultOptions ) {
-		this.selector = opt.selector = '.amask';
-		this.elem = opt.elem || document.querySelector(this.selector);
+		this.selector = opt.selector || defaultOptions.selector;
+		this.elems = opt.elem || document.querySelectorAll(this.selector);
 		this.pattern = opt.pattern || defaultOptions.pattern;
 		this.placeholder = opt.placeholder || defaultOptions.placeholder;
 	}
@@ -17,7 +18,7 @@ export default class AMask {
 	/* METHODS ----------------------------------------------------- */
 	
 	static version() {
-		return 'version 0.2.3';
+		return `version ${version}`;
 	}
 	
 	/** calculates what to show in input
@@ -125,10 +126,11 @@ export default class AMask {
 	}
 	
 	init(){
-		let elemInput = this.elem;
-		elemInput.setAttribute('placeholder', this.aMaskCore(this.placeholder));
-		// elemInput.focus();
-		elemInput.addEventListener('keyup', (e) => this.maskInput(e) );
+		let inputElems = this.elems;
+		inputElems.forEach((elem)=> {
+			elem.setAttribute('placeholder', this.aMaskCore(this.placeholder));
+			elem.addEventListener('keyup', (e) => this.maskInput(e) );
+		});
 	}
 }
 

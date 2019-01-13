@@ -1,10 +1,22 @@
 
 import AMask from '/Users/Amadeus/Frontend/MyGitHub/aMask/src/amask'
 
-const params = {
+console.log(AMask.version());
+
+const params1 = {
+	selector: '#dateStart',
+	spaceholder: '-',
+	pattern: '99.99.9999'
+};
+let amask1 = new AMask(params1);
+amask1.init();
+
+/* ====================================== */
+
+const params2 = {
 	selector: '.amask',
 	spaceholder: '-',
 	pattern: '99.99.9999'
 };
-let amask = new AMask(params);
-amask.init();
+let amask2 = new AMask(params2);
+amask2.init();
