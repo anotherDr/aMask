@@ -1,5 +1,5 @@
 
-import AMask from '/Users/Amadeus/Frontend/MyGitHub/aMask/src/amask'
+import AMask from './amask'
 
 console.log(AMask.version());
 
