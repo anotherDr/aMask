@@ -7,11 +7,11 @@
 		<h3>Directives</h3>
 		<div>
 			<input type="text"
-			       v-model="dateStart"
+			       v-model="dateFinish"
 			       :data-regexp="true"
 			       v-amask:phone.undescore="'+9 (999) 999-99-99'"
 			/>
-			&nbsp; {{dateStart}}
+			&nbsp; {{dateFinish}}
 		</div>
 	</div>
 </template>
@@ -30,7 +30,8 @@
 		name: "app-form",
 		data: function(){
 			return {
-				dateStart: ''
+				dateStart: '',
+				dateFinish: ''
 			}
 		},
 		directives: {
@@ -38,7 +39,18 @@
 		},
 		methods: {
 			amask(e){
-				console.log(aMask.maskInput(e));
+				let th = this;
+				let promise = new Promise((resolve, reject)=>{
+					resolve( th.maskInput(e) );
+				});
+				promise.then((result)=> {
+					let elem = e.target,
+						options = result;
+					console.log(aMask.maskInput(e));
+					th.dateStart = options.output;
+					elem.focus();
+					elem.setSelectionRange(options.cursorPosition, options.cursorPosition);
+				})
 			}
 		}
 	}

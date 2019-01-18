@@ -14,12 +14,12 @@ export default {
 			$require: false
 		});*/
 		
-		console.log( context );
-		console.log( binding.expression );
-		console.log( binding.value );
-		console.log( binding.name );
-		console.log( vnode );
-		console.log( vnode.context.$root );  // vue
+		// console.log( context );
+		// console.log( binding.expression );
+		// console.log( binding.value );
+		// console.log( binding.name );
+		// console.log( vnode );
+		// console.log( vnode.context.$root );  // vue
 		
 	},
 	update: function(el, binding, vnode){
@@ -41,9 +41,9 @@ export default {
 		}*/
 		
 		
-		console.log( 'val: ', val );
-		console.log(argument, mode );
-		console.log(binding.oldValue, binding.value, );
+		// console.log( 'val: ', val );
+		// console.log(argument, mode );
+		// console.log(binding.oldValue, binding.value, );
 		
 	},
 }
