@@ -1,5 +1,5 @@
 'use strict';
-const version = '0.2.5';
+const version = '0.2.6';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
@@ -57,12 +57,12 @@ export default class AMask {
 					/* do nothing */
 				}
 			}
-			else if (/[\s.\/()-]/.test(pat) ) {
+			else if (/[\s.\/()+\-]/.test(pat) ) {
 				bufferArr.push(pat);
 				i--;
 			}
 		}
-		inference = bufferArr.slice(0,10).join('');
+		inference = bufferArr.slice(0, patternLen).join('');
 		
 		return inference;
 	}
@@ -73,10 +73,10 @@ export default class AMask {
 	 */
 	calcCursorPosition(position){
 		let specPositions = Array.from(this.pattern, (item, idx)=>{
-			if (/[\s.\/()-]/.test(item) ) {
+			if (/[\s.\/()+\-]/.test(item) ) {
 				return idx;
 			}
-		}).filter((el)=> !!el);
+		}).filter((el)=> !!el || el === 0);
 		
 		if ( specPositions.includes(position) ) {
 			position++;
@@ -94,8 +94,11 @@ export default class AMask {
 			e.key === 'ArrowUp' ||
 			e.key === 'ArrowRight' ||
 			e.key === 'ArrowDown' ) {
-			return;
+			return new Promise((resolve, reject) => {
+				reject(new Error('Arrow Keys'));
+			});
 		}
+		
 		let elem = e.currentTarget,
 			/** @type {string} */
 			value = elem.value,
@@ -104,32 +107,53 @@ export default class AMask {
 			output,
 			cursorPosition;
 			
+		let th = this;
+		
 		let promise1 = new Promise((resolve, reject)=>{
-			resolve( this.aMaskCore(value) );
+			resolve( th.aMaskCore(value) );
+			reject( 'something wrong' );
 		});
+		
 		let promise2 = new Promise((resolve, reject)=>{
-			resolve( this.calcCursorPosition(position) );
+			resolve( th.calcCursorPosition(position) );
+			reject( 'something wrong' );
 		});
+			
+		return Promise.all([promise1,promise2])
+			.then((result) => {
+				output = result[0];
+				cursorPosition = result[1];
+				return {output, cursorPosition};
+			});
 		
-		Promise.all([promise1,promise2]).then((result) => {
-			output = result[0];
-			cursorPosition = result[1];
-			/** @type {string} */
-			elem.value = output;
+	}
+	
+	inputHandler(e) {
+		let th = this,
+			/** @type {Object} */
+			elem,
+			inputParams;
+		
+		th.maskInput(e).then( (result) => {
+			inputParams = result;
+			elem = e.target;
+			elem.value = inputParams.output;
 			elem.focus();
-			elem.setSelectionRange(cursorPosition, cursorPosition);
-			console.log(output, cursorPosition);
-			return {output, cursorPosition};
+			elem.setSelectionRange(inputParams.cursorPosition, inputParams.cursorPosition);
+		}).catch( (error) => {
+			console.error(error.message)
 		});
-		
-		
+	}
+	
+	vueFn(e) {
+	
 	}
 	
 	init(){
 		let inputElems = this.elems;
 		inputElems.forEach((elem)=> {
 			elem.setAttribute('placeholder', this.aMaskCore(this.placeholder));
-			elem.addEventListener('keyup', (e) => this.maskInput(e) );
+			elem.addEventListener('keyup', (e) => this.inputHandler(e) );
 		});
 	}
 }
