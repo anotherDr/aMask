@@ -1,7 +1,7 @@
 {
-  "name": "webpack_2018_3",
-  "version": "2.0.0",
-  "description": "webpack config",
+  "name": "Another One Mask",
+  "version": "0.2.8",
+  "description": "Another One Input Mask for JS and Vue",
   "private": true,
   "author": "amadeus",
   "license": "MIT",

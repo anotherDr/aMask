@@ -26,6 +26,7 @@
 		pattern: '+9 (999) 999-99-99'
 	};
 	const aMask = new AMask(props);
+	
 	export default {
 		name: "app-form",
 		data: function(){
@@ -40,16 +41,18 @@
 		methods: {
 			amask(e){
 				let th = this;
-				let promise = new Promise((resolve, reject)=>{
-					resolve( th.maskInput(e) );
-				});
-				promise.then((result)=> {
-					let elem = e.target,
-						options = result;
-					console.log(aMask.maskInput(e));
-					th.dateStart = options.output;
+				
+				aMask.maskInput(e).then((result)=> {
+					console.log(result);
+					
+					let elem = e.target;
+					
+					// th.dateStart = result.output;
+					elem.value = result.output;
 					elem.focus();
-					elem.setSelectionRange(options.cursorPosition, options.cursorPosition);
+					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
+				}).catch( reason => {
+					console.error(reason.message);
 				})
 			}
 		}

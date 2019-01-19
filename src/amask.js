@@ -1,5 +1,5 @@
 'use strict';
-const version = '0.2.6';
+const version = '0.2.8';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
@@ -13,6 +13,8 @@ export default class AMask {
 		this.elems = opt.elem || document.querySelectorAll(this.selector);
 		this.pattern = opt.pattern || defaultOptions.pattern;
 		this.placeholder = opt.placeholder || defaultOptions.placeholder;
+		/** @type number[] */
+		this.specPositions;
 	}
 	
 	/* METHODS ----------------------------------------------------- */
@@ -25,7 +27,7 @@ export default class AMask {
 	 * @param {string} value
 	 * @returns {string}
 	 */
-	aMaskCore(value)  {
+	aMaskCore(value, position)  {
 		let bufferArr = [],
 			/** @type {number} */
 			bufferLen = bufferArr.length,
@@ -35,11 +37,11 @@ export default class AMask {
 			placeholder = '_',
 			patternArr = pattern.split(''),
 			patternLen = patternArr.length,
-			valueArr = value.replace(/[^0-9.]+/g, ''),
+			valueArr = value.replace(/[^0-9.]+/g, ''), // is not like those
 			char = '',
 			/** @type {(number|string)} */
-			pat,    // part of patternArr
-			inference;
+			pat,        // part of patternArr
+			inference;  // result
 		
 		for (let i = 0; i < patternLen; i++) {
 			char = valueArr[i];
@@ -67,19 +69,21 @@ export default class AMask {
 		return inference;
 	}
 	
+	
 	/** calculate cursor position
 	 * @param {number} position
 	 * @returns {number}
 	 */
-	calcCursorPosition(position){
-		let specPositions = Array.from(this.pattern, (item, idx)=>{
-			if (/[\s.\/()+\-]/.test(item) ) {
-				return idx;
-			}
-		}).filter((el)=> !!el || el === 0);
+	calcCursorPosition(position, value = ''){
+		let patternArr = this.pattern.split(''),
+			char = value.split('')[position-1];
 		
-		if ( specPositions.includes(position) ) {
+		if ( /[\s.\/()+\-]/.test(patternArr[position-1]) ) {
 			position++;
+			return this.calcCursorPosition(position);
+		}
+		else if ( !/[0-9\s.\/()+\-]/.test(char) ) {
+			position--;
 		}
 		return position;
 	}
@@ -111,12 +115,12 @@ export default class AMask {
 		
 		let promise1 = new Promise((resolve, reject)=>{
 			resolve( th.aMaskCore(value) );
-			reject( 'something wrong' );
+			reject( new Error('something wrong') );
 		});
 		
 		let promise2 = new Promise((resolve, reject)=>{
-			resolve( th.calcCursorPosition(position) );
-			reject( 'something wrong' );
+			resolve( th.calcCursorPosition(position, value) );
+			reject( new Error('something wrong') );
 		});
 			
 		return Promise.all([promise1,promise2])
@@ -128,6 +132,10 @@ export default class AMask {
 		
 	}
 	
+	/**
+	 * handler for vanilla js onKeyUp
+	 * @param e
+	 */
 	inputHandler(e) {
 		let th = this,
 			/** @type {Object} */
@@ -145,10 +153,24 @@ export default class AMask {
 		});
 	}
 	
-	vueFn(e) {
-	
+	setPlaceholder(){
+		this.elem.setAttribute('placeholder', this.aMaskCore(this.placeholder));
 	}
 	
+	/**
+	 * handler for vue function
+	 * @param e
+	 */
+	vueFn(e) {
+		th.maskInput(e).then( (result) => {
+			let output = result[0],
+				cursorPosition = result[1];
+			return {output, cursorPosition};
+		})
+	}
+	/**
+	 * add event for vanilla js 'keyup'
+	 */
 	init(){
 		let inputElems = this.elems;
 		inputElems.forEach((elem)=> {
