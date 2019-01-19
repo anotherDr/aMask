@@ -15,38 +15,43 @@ export default class AMask {
 		this.placeholder = opt.placeholder || defaultOptions.placeholder;
 		/** @type number[] */
 		this.specPositions;
+		this.patternArr = this.pattern.split('');
+		this.patternLen = this.patternArr.length;
 	}
 	
-	/* METHODS ----------------------------------------------------- */
+	/** -----------------------------------------------------
+	 *  METHODS
+	 *  ----------------------------------------------------- */
 	
-	static version() {
+	/**
+	 * returns version
+	 * @returns {string}
+	 */
+	 static version() {
 		return `version ${version}`;
 	}
 	
-	/** calculates what to show in input
+	/**
+	 * calculates OUTPUT VALUE which will show in the input field
 	 * @param {string} value
 	 * @returns {string}
 	 */
 	aMaskCore(value, position)  {
 		let bufferArr = [],
 			/** @type {number} */
-			bufferLen = bufferArr.length,
-			/** @type {string} */
-			pattern =  this.pattern,
+			bufferLen = bufferArr.length,               // length of new (output) array
 			/** @type {string} */
 			placeholder = '_',
-			patternArr = pattern.split(''),
-			patternLen = patternArr.length,
-			valueArr = value.replace(/[^0-9.]+/g, ''), // is not like those
-			char = '',
+			valueArr = value.replace(/[^0-9.]+/g, ''),  // remove which aren't like those
+			char = '',                                  // slice from value
 			/** @type {(number|string)} */
-			pat,        // part of patternArr
-			inference;  // result
+			pat,                                        // slice from pattern
+			inference;                                  // result
 		
-		for (let i = 0; i < patternLen; i++) {
+		for (let i = 0; i < this.patternLen; i++) {
 			char = valueArr[i];
 			bufferLen = bufferArr.length;
-			pat = patternArr[bufferLen];
+			pat = this.patternArr[bufferLen];
 			
 			if (/\d/.test(pat)) {
 				if (/\d/.test(char)) {
@@ -64,23 +69,22 @@ export default class AMask {
 				i--;
 			}
 		}
-		inference = bufferArr.slice(0, patternLen).join('');
+		inference = bufferArr.slice(0, this.patternLen).join('');
 		
 		return inference;
 	}
 	
-	
-	/** calculate cursor position
+	/**
+	 * calculates CURSOR POSITION
 	 * @param {number} position
 	 * @returns {number}
 	 */
-	calcCursorPosition(position, value = ''){
-		let patternArr = this.pattern.split(''),
-			char = value.split('')[position-1];
+	calcCursorPosition(position, value){
+		let char = (value.length > 1) ? value.split('')[position-1] : value;
 		
-		if ( /[\s.\/()+\-]/.test(patternArr[position-1]) ) {
+		if ( /[\s.\/()+\-]/.test(this.patternArr[position-1]) ) {
 			position++;
-			return this.calcCursorPosition(position);
+			return this.calcCursorPosition(position, char);
 		}
 		else if ( !/[0-9\s.\/()+\-]/.test(char) ) {
 			position--;
@@ -88,7 +92,8 @@ export default class AMask {
 		return position;
 	}
 	
-	/** handler of keyup event : receives and emits value
+	/**
+	 * handler of keyup event : receives and emits value
 	 * @param {Object} e
 	 * @returns {Object}
 	 * */
@@ -149,12 +154,13 @@ export default class AMask {
 			elem.focus();
 			elem.setSelectionRange(inputParams.cursorPosition, inputParams.cursorPosition);
 		}).catch( (error) => {
-			console.error(error.message)
+			console.log(error.message)
 		});
 	}
 	
 	setPlaceholder(){
-		this.elem.setAttribute('placeholder', this.aMaskCore(this.placeholder));
+		// this.elem.setAttribute('placeholder', this.aMaskCore(this.placeholder));
+		return this.aMaskCore(this.placeholder);
 	}
 	
 	/**
