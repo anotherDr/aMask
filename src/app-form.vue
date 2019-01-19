@@ -2,7 +2,11 @@
 	<div>
 		<h3>Function</h3>
 		<div>
-			<input type="text" v-model="dateStart" @keyup="amask($event)">&nbsp; {{dateStart}}
+			<input type="text"
+			       :placeholder="setPlaceholder()"
+			       v-model="dateStart"
+			       @keyup="amask($event)"
+			/>&nbsp; {{dateStart}}
 		</div>
 		<h3>Directives</h3>
 		<div>
@@ -39,6 +43,9 @@
 			amask,
 		},
 		methods: {
+			setPlaceholder(){
+				return aMask.setPlaceholder();
+			},
 			amask(e){
 				let th = this;
 				
@@ -52,7 +59,7 @@
 					elem.focus();
 					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
 				}).catch( reason => {
-					console.error(reason.message);
+					console.log(reason.message);
 				})
 			}
 		}
