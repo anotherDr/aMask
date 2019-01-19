@@ -6,7 +6,8 @@ console.log(AMask.version());
 const params1 = {
 	selector: '#dateStart',
 	spaceholder: '-',
-	pattern: '99.99.9999'
+	// pattern: '99.99.9999'
+	pattern: '+9 (999) 999-99-99'
 };
 let amask1 = new AMask(params1);
 amask1.init();
