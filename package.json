@@ -1,9 +1,9 @@
 {
-  "name": "Another One Mask",
+  "name": "Another-One-Mask",
   "version": "0.3.0",
   "description": "Another One Input Mask for JS and Vue",
   "private": true,
-  "author": "amodeus",
+  "author": "amoDeus",
   "license": "MIT",
   "scripts": {
     "webpack": "webpack --config=config/webpack.config.js",

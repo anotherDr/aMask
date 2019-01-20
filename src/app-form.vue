@@ -6,7 +6,6 @@
 			       :placeholder="setPlaceholder()"
 			       @keyup="amask($event)"
 			/>&nbsp; {{phone}}
-			<!--@change="phone = $event.target.value"-->
 		</div>
 		<!--<h3>Directives</h3>-->
 		<!--<div>-->
@@ -21,12 +20,11 @@
 </template>
 
 <script>
-	import Vue from 'vue'                 // mask core module
 	import AMask from './amask'                 // mask core module
 	import amaskdir from '../shared/a-mask-dir'    // mask directive
 	
 	const props = {
-		selector: '#dateStart',
+		selector: '#phone',
 		spaceholder: '-',
 		pattern: '+9 (999) 999-99-99'
 	};
@@ -51,19 +49,37 @@
 			},
 			amask(e){
 				let th = this;
-					
-				let elem = e.target,
-				result = aMask.maskInput(e);
 				
-				th.phone = result.output;
-				elem.value = result.output;
-				elem.focus();
-				elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
+				aMask.maskInput(e).then((result)=> {
+					
+					let elem = e.target;
+					
+					th.phone = result.output;
+					elem.value = result.output;
+					elem.focus();
+					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
+				}).catch( reason => {
+					console.log(reason.message);
+				})
 			}
 		}
 	}
 </script>
 
 <style scoped>
+	
+	*:focus {
+		outline-color: lawngreen;
+	}
 
+</style>
+
+<style>
+	* {
+		box-sizing: border-box;
+	}
+	
+	input {
+		padding: 4px 8px;
+	}
 </style>
