@@ -1,5 +1,5 @@
 'use strict';
-const version = '0.2.8';
+const version = '0.2.10';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
@@ -98,17 +98,9 @@ export default class AMask {
 	 * @returns {Object}
 	 * */
 	maskInput(e){
-		if (e.key === 'Backspace' ||
-			e.key === 'ArrowLeft' ||
-			e.key === 'ArrowUp' ||
-			e.key === 'ArrowRight' ||
-			e.key === 'ArrowDown' ) {
-			return new Promise((resolve, reject) => {
-				reject(new Error('Arrow Keys'));
-			});
-		}
 		
-		let elem = e.currentTarget,
+		let th = this,
+			elem = e.currentTarget,
 			/** @type {string} */
 			value = elem.value,
 			/** @type {number} */
@@ -116,25 +108,17 @@ export default class AMask {
 			output,
 			cursorPosition;
 			
-		let th = this;
+		if (e.key === 'Backspace'  ||
+			e.key === 'ArrowLeft'  ||
+			e.key === 'ArrowUp'    ||
+			e.key === 'ArrowRight' ||
+			e.key === 'ArrowDown' ) {
+			return {output: value, cursorPosition: position};
+		}
 		
-		let promise1 = new Promise((resolve, reject)=>{
-			resolve( th.aMaskCore(value) );
-			reject( new Error('something wrong') );
-		});
-		
-		let promise2 = new Promise((resolve, reject)=>{
-			resolve( th.calcCursorPosition(position, value) );
-			reject( new Error('something wrong') );
-		});
-			
-		return Promise.all([promise1,promise2])
-			.then((result) => {
-				output = result[0];
-				cursorPosition = result[1];
-				return {output, cursorPosition};
-			});
-		
+		output = th.aMaskCore(value);;
+		cursorPosition = th.calcCursorPosition(position, value);
+		return {output, cursorPosition};
 	}
 	
 	/**
@@ -146,16 +130,13 @@ export default class AMask {
 			/** @type {Object} */
 			elem,
 			inputParams;
+			
+		inputParams = th.maskInput(e);
+		elem = e.target;
+		elem.value = inputParams.output;
+		elem.focus();
+		elem.setSelectionRange(inputParams.cursorPosition, inputParams.cursorPosition);
 		
-		th.maskInput(e).then( (result) => {
-			inputParams = result;
-			elem = e.target;
-			elem.value = inputParams.output;
-			elem.focus();
-			elem.setSelectionRange(inputParams.cursorPosition, inputParams.cursorPosition);
-		}).catch( (error) => {
-			console.log(error.message)
-		});
 	}
 	
 	setPlaceholder(){
@@ -163,17 +144,6 @@ export default class AMask {
 		return this.aMaskCore(this.placeholder);
 	}
 	
-	/**
-	 * handler for vue function
-	 * @param e
-	 */
-	vueFn(e) {
-		th.maskInput(e).then( (result) => {
-			let output = result[0],
-				cursorPosition = result[1];
-			return {output, cursorPosition};
-		})
-	}
 	/**
 	 * add event for vanilla js 'keyup'
 	 */
