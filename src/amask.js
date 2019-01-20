@@ -86,7 +86,7 @@ export default class AMask {
 			position++;
 			return this.calcCursorPosition(position, char);
 		}
-		else if ( !/[0-9\s.\/()+\-]/.test(char) ) {
+		else if ( !/[0-9]/.test(char) ) {
 			position--;
 		}
 		return position;
