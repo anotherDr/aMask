@@ -4,19 +4,18 @@
 		<div>
 			<input type="text"
 			       :placeholder="setPlaceholder()"
-			       v-model="dateStart"
 			       @keyup="amask($event)"
-			/>&nbsp; {{dateStart}}
+			/>&nbsp; {{phone}}
 		</div>
-		<h3>Directives</h3>
-		<div>
-			<input type="text"
-			       v-model="dateFinish"
-			       :data-regexp="true"
-			       
-			/><!-- v-amask:phone.undescore="'+9 (999) 999-99-99'" -->
-			&nbsp; {{dateFinish}}
-		</div>
+		<!--<h3>Directives</h3>-->
+		<!--<div>-->
+			<!--<input type="text"-->
+			       <!--v-model="dateFinish"-->
+			       <!--:data-regexp="true"-->
+			       <!---->
+			<!--/>&lt;!&ndash; v-amask:phone.undescore="'+9 (999) 999-99-99'" &ndash;&gt;-->
+			<!--&nbsp; {{dateFinish}}-->
+		<!--</div>-->
 	</div>
 </template>
 
@@ -25,7 +24,7 @@
 	import amaskdir from '../shared/a-mask-dir'    // mask directive
 	
 	const props = {
-		selector: '#dateStart',
+		selector: '#phone',
 		spaceholder: '-',
 		pattern: '+9 (999) 999-99-99'
 	};
@@ -36,6 +35,7 @@
 		name: 'app-form',
 		data: function(){
 			return {
+				phone: '',
 				dateStart: '',
 				dateFinish: ''
 			}
@@ -54,10 +54,11 @@
 					
 					let elem = e.target;
 					
-					th.dateStart = result.output;
-					// elem.value = result.output;
+					th.phone = result.output;
+					elem.value = result.output;
 					elem.focus();
-					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);				}).catch( reason => {
+					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
+				}).catch( reason => {
 					console.log(reason.message);
 				})
 			}
@@ -66,5 +67,19 @@
 </script>
 
 <style scoped>
+	
+	*:focus {
+		outline-color: lawngreen;
+	}
 
+</style>
+
+<style>
+	* {
+		box-sizing: border-box;
+	}
+	
+	input {
+		padding: 4px 8px;
+	}
 </style>
