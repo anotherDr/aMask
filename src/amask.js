@@ -1,5 +1,5 @@
 'use strict';
-const version = '0.3.0';
+const version = '0.3.2';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',

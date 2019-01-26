@@ -1,6 +1,6 @@
 {
   "name": "Another-One-Mask",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "Another One Input Mask for JS and Vue",
   "private": true,
   "author": "amoDeus",
@@ -25,6 +25,7 @@
     "webpack-dev-server": "^3.1.10"
   },
   "dependencies": {
+    "moment": "^2.24.0",
     "vue": "^2.5.16",
     "vuejs-datepicker": "^1.5.4",
     "vuex": "^3.0.1"
