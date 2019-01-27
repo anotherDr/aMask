@@ -3,30 +3,28 @@
 		<h3>Methods</h3>
 		<div>
 			<input type="text"
-			       :placeholder="setPlaceholder()"
-			       @keyup="amask($event)"
+			       :placeholder="setPhonePlaceholder()"
+			       @keyup="phoneMaskinput($event)"
 			/>&nbsp; {{phone}}
 		</div>
 		<h3>With Datepicker</h3>
 		<div>{{compDate}}</div>
 		<div>{{dateStart}}</div>
-		<div>{{closedMsg}}</div>
-		<input type="text" v-model="dateStart">
-		
+		<input type="text"
+		       v-model="dateStart"
+		       placeholder="__.__.____"
+		       @keyup="dateMaskinput($event)"
+		/>
 		<button class="btn btn-datepicker">
 			<i class="far fa-calendar"></i>
 			<datepicker
-					@input="onInputFn"
-					@selected="selectedDPFn"
-					@opened="openedDPFn"
-					@closed="closedDPFn"
+					@selected="dateSelected"
 					:language="ru"
 					:monday-first="true  "
-					:typeable="true"
 					format="MM.dd.yyyy"
 					:value="compDate"
 			/>
-		</button>
+		</button> {{dateStart}}
 	</div>
 </template>
 
@@ -45,11 +43,11 @@
 		spaceholder: '-',
 		pattern: '+9 (999) 999-99-99'
 	};
-	const aMask = new AMask(props);
+	const phoneMask = new AMask(props);
 	
 	const dateProps = {
 		selector: '#dateStart',
-		spaceholder: ' ',
+		spaceholder: '_',
 		pattern: '99.99.9999'
 	};
 	const dateMask = new AMask(dateProps);
@@ -62,13 +60,8 @@
 				phone: '',
 				dateStart: '',
 				dateFinish: '',
-				// datepicker
 				en: en,
 				ru: ru,
-				
-				fakeDate: '',
-				onInput: 'input',
-				closedMsg: 'closedMsg'
 			}
 		},
 		computed: {
@@ -84,13 +77,13 @@
 			amaskdir,
 		},
 		methods: {
-			setPlaceholder(){
-				return aMask.setPlaceholder();
+			setPhonePlaceholder(){
+				return phoneMask.setPlaceholder();
 			},
-			amask(e){
+			phoneMaskinput(e){
 				let th = this;
 				
-				aMask.maskInput(e).then((result)=> {
+				phoneMask.maskInput(e).then((result)=> {
 					
 					let elem = e.target;
 					
@@ -102,9 +95,7 @@
 					console.log(reason.message);
 				})
 			},
-			dateIputmask(e){
-				console.log('e')
-			},
+			/* Date */
 			dateMaskinput(e){
 				let th = this;
 				
@@ -112,7 +103,7 @@
 					
 					let elem = e.target;
 					
-					th.phone = result.output;
+					th.dateStart = result.output;
 					elem.value = result.output;
 					elem.focus();
 					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
@@ -120,25 +111,9 @@
 					console.log(reason.message);
 				})
 			},
-			onInputFn(e){
-				console.log(e);
-				this.onInput = e;
-			},
-			selectedDPFn(e){
+			dateSelected(e){
 				this.dateStart = moment(e).format('DD.MM.YYYY');
 			},
-			openedDPFn(e){
-				this.closedMsg = 'opened';
-				console.log(e)
-			},
-			closedDPFn(e){
-				this.closedMsg = 'closedMsg validation';
-				console.log(e)
-			},
-		},
-		mounted(){
-			let th = this;
-			dateMask.init();
 		}
 	}
 </script>
