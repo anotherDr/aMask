@@ -60,12 +60,26 @@
 		</div>
 		
 		<hr class="separator"/>
-	</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<h3>Masked Datepicker</h3>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-4">
+				<masked-datepicker />
+			</div>
+		</div>
+		
+		</div>
 </template>
 
 <script>
 	import AMask from './amask'                 // mask core module
-	import amaskdir from '../shared/a-mask-dir'    // mask directive
+	// import amaskdir from '../shared/a-mask-dir'    // mask directive
+	import MaskedDatepicker from '../shared/masked-datepicker.vue'    // mask directive
 	
 	/* https://github.com/charliekassel/vuejs-datepicker */
 	import Datepicker from 'vuejs-datepicker';
@@ -106,11 +120,12 @@
 			}
 		},
 		components: {
-			Datepicker
+			Datepicker,
+			'masked-datepicker': MaskedDatepicker,
 		},
-		directives: {
-			amaskdir,
-		},
+		// directives: {
+		// 	amaskdir,
+		// },
 		methods: {
 			setPhonePlaceholder(){
 				return phoneMask.setPlaceholder();
