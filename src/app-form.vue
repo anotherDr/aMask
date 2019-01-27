@@ -1,30 +1,65 @@
 <template>
 	<div>
-		<h3>Methods</h3>
-		<div>
-			<input type="text"
-			       :placeholder="setPhonePlaceholder()"
-			       @keyup="phoneMaskinput($event)"
-			/>&nbsp; {{phone}}
+		<div class="row">
+			<div class="col-md-12">
+				<h2>VUE</h2>
+				<h3>Methods</h3>
+			</div>
 		</div>
-		<h3>With Datepicker</h3>
-		<div>{{compDate}}</div>
-		<div>{{dateStart}}</div>
-		<input type="text"
-		       v-model="dateStart"
-		       placeholder="__.__.____"
-		       @keyup="dateMaskinput($event)"
-		/>
-		<button class="btn btn-datepicker">
-			<i class="far fa-calendar"></i>
-			<datepicker
-					@selected="dateSelected"
-					:language="ru"
-					:monday-first="true  "
-					format="MM.dd.yyyy"
-					:value="compDate"
-			/>
-		</button> {{dateStart}}
+		
+		<div class="row">
+			<div class="col-md-4">
+				<div class="form-group">
+					<input type="text"
+					       class="form-control"
+					       :placeholder="setPhonePlaceholder()"
+					       @keyup="phoneMaskinput($event)"
+					/>
+				</div>
+			</div>
+			<div class="col-md-4">
+				{{phone}}
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<h3>With Datepicker</h3>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-4">
+				<div class="input-group mb-3">
+					<input type="text"
+					       class="form-control"
+					       v-model="dateStart"
+					       placeholder="__.__.____"
+					       @keyup="dateMaskinput($event)"
+					/>
+					<div class="input-group-append">
+						<button class="btn btn-outline-secondary btn-datepicker">
+							<i class="far fa-calendar"></i>
+							<datepicker
+									@selected="dateSelected"
+									:language="ru"
+									:monday-first="true  "
+									format="MM.dd.yyyy"
+									:value="compDate"
+							/>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				{{compDate}}
+			</div>
+			<div class="col-md-4">
+				{{dateStart}}
+			</div>
+		</div>
+		
+		<hr class="separator"/>
 	</div>
 </template>
 
@@ -120,70 +155,34 @@
 
 <style scoped>
 	
-	*:focus {
-		/*outline-color: lawngreen;*/
-		/*outline-color: #00ddff;*/
-		/*outline-color: cyan;*/
+	.btn-datepicker {
+		position: relative;
+		background: #ddd;
+		white-space: normal;
+		color: #555555;
+		/*display: inline-block;*/
+		/*width: 29px;*/
+		/*height: 29px;*/
+		/*line-height: 29px;*/
+		/*padding: 0;*/
+		/*vertical-align: middle;*/
+		/*margin-left: -8px;*/
+		/*border: 1px solid #ccc;*/
+		/*border-radius: 4px;*/
+		/*font-size: 16px;*/
 	}
+	
+	.btn-datepicker:focus {
+		outline: none;
+	}
+
 
 </style>
 
 <style lang="scss">
-	$blue_dark: navy;
-	* {
-		box-sizing: border-box;
-	}
-	*:focus {
-		outline-color: #00ddff;
-	}
-	
-	input {
-		padding: 5px 8px;
-		font-size: 14px;
-		vertical-align: middle;
-		border-radius: 4px;
-		border: 1px solid $blue_dark;
-	}
-	
-	.icon,
-	.btn {
-		display: inline-block;
-		width: 32px;
-		height: 32px;
-		background: #ddd;   
-		color: $blue_dark;
-		border: 1px solid $blue_dark;
-		-webkit-border-radius: 4px;
-		-moz-border-radius: 4px;
-		border-radius: 4px;
-		
-		img {
-			width: 16px;
-			height: 16px;
-		}
-	}
-	
-	.btn-datepicker {
-		position: relative;
-		display: inline-block;
-		width: 29px;
-		height: 29px;
-		line-height: 29px;
-		padding: 0;
-		vertical-align: middle;
-		margin-left: -8px;
-		background: #eaeafd;
-		color: $blue_dark;
-		border: 1px solid navy;
-		border-radius: 4px;
-		font-size: 16px;
-	}
-	
-	.vdp-datepicker,
-	.vdp-datepicker input {
-		position: absolute;
+	.vdp-datepicker {
+		position: absolute !important;
 		width: 100%;
-		 /*opacity: 0;*/
 		height: 100%;
 		top: 0;
 		left: 0;
@@ -195,6 +194,7 @@
 		cursor: pointer;
 	}
 	.vdp-datepicker input {
+		@extend .vdp-datepicker;
 		background: transparent;
 		color: transparent;
 	}
@@ -203,10 +203,28 @@
 		position: absolute;
 		z-index: 100;
 		background: #fff;
-		width: 300px;
+		width: 220px;
 		border: 1px solid #ccc;
-		left: -150px;
-		top: -150px;
-		/*color: #000;*/
+		right: -1px;
+		top: -1px;
+		font-size: 14px;
+		padding: 0px 5px 15px;
+		min-height: 172px;
+	}
+
+	.vdp-datepicker:focus {
+		outline: none;
+	}
+	.vdp-datepicker__calendar .cell {
+		padding: 0 5px;
+		height: 20px;
+		line-height: 20px;
+		
+		&.weekend {
+			color: red;
+		}
+		&.selected {
+			background: #6be6ff;
+		}
 	}
 </style>

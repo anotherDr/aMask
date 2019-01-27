@@ -1,11 +1,12 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpack = require('webpack');
 
 const PATH = path.resolve(__dirname, '../');
-const isDev = process.env.NODE_ENV !== 'production';
+const devMode = process.env.NODE_ENV !== 'production';
 
-console.log( 'mode: ', isDev );
+console.log( 'mode: ', devMode );
 console.log( '__dirname: ', __dirname );
 console.log( 'dist: ', path.join(__dirname, '../dist') );
 console.log( 'PATH: ', PATH, '\n\n\n');
@@ -48,7 +49,8 @@ module.exports = {
 			{
 				test: /\.scss$/,
 				use: [
-				  'vue-style-loader',
+					// devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+					MiniCssExtractPlugin.loader,
 				  'css-loader',
 				  'sass-loader'
 				]
@@ -59,6 +61,12 @@ module.exports = {
 	plugins: [
 		// make sure to include the plugin for the magic
 		new VueLoaderPlugin(),
+		new MiniCssExtractPlugin({
+			// Options similar to the same options in webpackOptions.output
+			// both options are optional
+			// publicPath: '/css/',
+			filename: "main.css",
+		})
 	  ],
 	
 	devtool: 'source-map',
