@@ -1,0 +1,180 @@
+<template>
+	<div>
+		<div class="input-group">
+			<input type="text"
+			       class="form-control"
+			       v-model="typedDate"
+			       placeholder="__.__.____"
+			       @keyup="dateMaskinput($event)"
+			/>
+			<div class="input-group-append">
+				<button class="btn btn-outline-secondary btn-datepicker">
+					<i class="far fa-calendar"></i>
+					<datepicker
+							@selected="dateSelected"
+							:language="curLang"
+							:monday-first="true  "
+							format="MM.dd.yyyy"
+							:value="computedDate"
+					/>
+				</button>
+			</div>
+		</div>
+		<div v-if="test" class="clearfix">
+			<div>
+				{{computedDate}}
+			</div>
+			<div>
+				{{typedDate}}
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	import AMask from './amask'                 // mask core module
+	
+	/* https://github.com/charliekassel/vuejs-datepicker */
+	import Datepicker from 'vuejs-datepicker';
+	import {en, ru} from 'vuejs-datepicker/dist/locale'
+	
+	import moment from 'moment'
+	
+	const dateProps = {
+		spaceholder: '_',
+		pattern: '99.99.9999'
+	};
+	const dateMask = new AMask(dateProps);
+	
+	export default {
+		name: 'masked-input',
+		props: {
+			lang: String,
+		},
+		data: function () {
+			return {
+				typedDate: '',
+				curLang: this.lang === 'ru' ? ru : en,
+				// en: en,
+				// ru: ru,
+				
+				/* STATUS */
+				test: false, // TODO: remove
+			}
+		},
+		watch: {
+			typedDate(){
+				this.$emit('chosen-date', this.typedDate);
+			}
+		},
+		computed: {
+			computedDate() {
+				let th = this;
+				return moment(th.typedDate, 'DD.MM.YYYY').format('MM.DD.YYYY');
+			}
+		},
+		components: {
+			Datepicker
+		},
+		methods: {
+			/* Date */
+			dateMaskinput(e) {
+				let th = this;
+				
+				dateMask.maskInput(e).then((result) => {
+					
+					let elem = e.target;
+					
+					th.typedDate = result.output;
+					elem.value = result.output;
+					elem.focus();
+					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
+				}).catch(reason => {
+					console.log(reason.message);
+				})
+			},
+			dateSelected(e) {
+				this.typedDate = moment(e).format('DD.MM.YYYY');
+			},
+		}
+	}
+</script>
+
+<style scoped>
+	
+	.btn-datepicker {
+		position: relative;
+		background: #ddd;
+		white-space: normal;
+		color: #555555;
+		/*display: inline-block;*/
+		/*width: 29px;*/
+		/*height: 29px;*/
+		/*line-height: 29px;*/
+		/*padding: 0;*/
+		/*vertical-align: middle;*/
+		/*margin-left: -8px;*/
+		/*border: 1px solid #ccc;*/
+		/*border-radius: 4px;*/
+		/*font-size: 16px;*/
+	}
+	
+	.btn-datepicker:focus {
+		outline: none;
+	}
+
+
+</style>
+
+<style lang="scss">
+	.vdp-datepicker {
+		position: absolute !important;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: 0;
+		padding: 0;
+		border-width: 0;
+		cursor: pointer;
+	}
+	
+	.vdp-datepicker input {
+		@extend .vdp-datepicker;
+		background: transparent;
+		color: transparent;
+	}
+	
+	.vdp-datepicker__calendar {
+		position: absolute;
+		z-index: 100;
+		background: #fff;
+		width: 220px;
+		border: 1px solid #ccc;
+		right: -1px;
+		top: -1px;
+		font-size: 14px;
+		padding: 0px 5px 15px;
+		min-height: 172px;
+	}
+	
+	.vdp-datepicker:focus {
+		outline: none;
+	}
+	
+	.vdp-datepicker__calendar .cell {
+		padding: 0 5px;
+		height: 20px;
+		line-height: 20px;
+		
+		&.weekend {
+			color: red;
+		}
+		
+		&.selected {
+			background: #6be6ff;
+		}
+	}
+</style>

@@ -1,5 +1,6 @@
 <template>
 	<div>
+		
 		<div class="row">
 			<div class="col-md-12">
 				<h2>VUE</h2>
@@ -69,17 +70,25 @@
 		
 		<div class="row">
 			<div class="col-md-4">
-				<masked-datepicker />
+				<!--/* MASKED DATEPICKER COMPONENT*/-->
+				<masked-datepicker
+						:lang="lang"
+						v-on:chosen-date="printResult"
+				
+				/>
+			<div class="col-md-4">
+				Masked Datepicker Result: {{maskedDatepickerResult}}
 			</div>
 		</div>
-		
 		</div>
+		
+	</div>
 </template>
 
 <script>
 	import AMask from './amask'                 // mask core module
 	// import amaskdir from '../shared/a-mask-dir'    // mask directive
-	import MaskedDatepicker from '../shared/masked-datepicker.vue'    // mask directive
+	import MaskedDatepicker from './masked-datepicker.vue'    // mask directive
 	
 	/* https://github.com/charliekassel/vuejs-datepicker */
 	import Datepicker from 'vuejs-datepicker';
@@ -111,6 +120,10 @@
 				dateFinish: '',
 				en: en,
 				ru: ru,
+				
+				/* MASKED DATEPICKER COMPONENT*/
+				maskedDatepickerResult: '',
+				lang: 'ru',
 			}
 		},
 		computed: {
@@ -163,6 +176,11 @@
 			},
 			dateSelected(e){
 				this.dateStart = moment(e).format('DD.MM.YYYY');
+			},
+			
+			/* MASKED DATEPICKER COMPONENT*/
+			printResult(result){
+				this.maskedDatepickerResult = result;
 			},
 		}
 	}
