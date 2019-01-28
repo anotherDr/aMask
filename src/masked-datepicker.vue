@@ -16,6 +16,7 @@
 							:monday-first="true  "
 							format="MM.dd.yyyy"
 							:value="computedDate"
+							:disabledDates="state.disabledDates"
 					/>
 				</button>
 			</div>
@@ -50,13 +51,12 @@
 		name: 'masked-input',
 		props: {
 			lang: String,
+			state: Object,
 		},
 		data: function () {
 			return {
 				typedDate: '',
 				curLang: this.lang === 'ru' ? ru : en,
-				// en: en,
-				// ru: ru,
 				
 				/* STATUS */
 				test: false, // TODO: remove
@@ -64,6 +64,26 @@
 		},
 		watch: {
 			typedDate(){
+				
+				let status;
+				let validate = moment(this.typedDate, 'DD.MM.YYYY').isValid();
+				
+				if ( validate ) {
+					//console.log(validate);
+				}
+				
+				if (this.state.disabledDates.from) {
+					status = moment(this.typedDate, 'DD.MM.YYYY').isBefore(this.state.disabledDates.from) || status;
+				}
+
+				if (this.state.disabledDates.to) {
+					status = moment(this.typedDate, 'DD.MM.YYYY').isAfter(this.state.disabledDates.to) || status;
+				}
+				
+				if (this.state.disabledDates.from && this.state.disabledDates.to) {
+					status = moment(this.typedDate, 'DD.MM.YYYY').isBetween(this.state.disabledDates.to, this.state.disabledDates.from) || status;
+				}
+				console.log(status);
 				this.$emit('chosen-date', this.typedDate);
 			}
 		},

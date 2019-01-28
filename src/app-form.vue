@@ -74,7 +74,7 @@
 				<masked-datepicker
 						:lang="lang"
 						v-on:chosen-date="printResult"
-				
+						:state="state"
 				/>
 			<div class="col-md-4">
 				Masked Datepicker Result: {{maskedDatepickerResult}}
@@ -124,6 +124,12 @@
 				/* MASKED DATEPICKER COMPONENT*/
 				maskedDatepickerResult: '',
 				lang: 'ru',
+				state: {
+					disabledDates: {
+						to: new Date(2019, 0, 15), // Disable all dates up to specific date
+						from: new Date(2019, 0, 30), // Disable all dates after specific date
+					}
+				}
 			}
 		},
 		computed: {
