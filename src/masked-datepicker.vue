@@ -66,25 +66,30 @@
 			typedDate(){
 				
 				let status;
-				let validate = moment(this.typedDate, 'DD.MM.YYYY').isValid();
+				let validated = /\d\d\.\d\d\.\d\d\d\d/.test(this.typedDate);
 				
-				if ( validate ) {
-					//console.log(validate);
+				if (validated) {
+					let validateDate = moment(this.typedDate, 'DD.MM.YYYY').isValid();
+					console.log(validateDate);
+					
+					if (this.state.disabledDates.from) {
+						status = moment(this.typedDate, 'DD.MM.YYYY').isBefore(this.state.disabledDates.from);
+					}
+					console.log('isBefore: ', status);
+					
+					if (this.state.disabledDates.to) {
+						status = moment(this.typedDate, 'DD.MM.YYYY').isAfter(this.state.disabledDates.to);
+					}
+					console.log('isAfter: ', status);
+					
+					if (this.state.disabledDates.from && this.state.disabledDates.to) {
+						status = moment(this.typedDate, 'DD.MM.YYYY').isBetween(this.state.disabledDates.to, this.state.disabledDates.from);
+					}
+					console.log('both: ', status);
+					console.log('status: ', status);
+					this.$emit('chosen-date', this.typedDate);
 				}
 				
-				if (this.state.disabledDates.from) {
-					status = moment(this.typedDate, 'DD.MM.YYYY').isBefore(this.state.disabledDates.from) || status;
-				}
-
-				if (this.state.disabledDates.to) {
-					status = moment(this.typedDate, 'DD.MM.YYYY').isAfter(this.state.disabledDates.to) || status;
-				}
-				
-				if (this.state.disabledDates.from && this.state.disabledDates.to) {
-					status = moment(this.typedDate, 'DD.MM.YYYY').isBetween(this.state.disabledDates.to, this.state.disabledDates.from) || status;
-				}
-				console.log(status);
-				this.$emit('chosen-date', this.typedDate);
 			}
 		},
 		computed: {

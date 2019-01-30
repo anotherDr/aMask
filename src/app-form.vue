@@ -126,8 +126,8 @@
 				lang: 'ru',
 				state: {
 					disabledDates: {
-						to: new Date(2019, 0, 15), // Disable all dates up to specific date
-						from: new Date(2019, 0, 30), // Disable all dates after specific date
+						to: new Date(2019, 0, 25), // Disable all dates up to specific date
+						from: new Date(2019, 1, 10), // Disable all dates after specific date
 					}
 				}
 			}
