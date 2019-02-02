@@ -21,14 +21,14 @@
 				</button>
 			</div>
 		</div>
-		<div v-if="test" class="clearfix">
+		<!--<div v-if="test" class="clearfix">
 			<div>
 				{{computedDate}}
 			</div>
 			<div>
 				{{typedDate}}
 			</div>
-		</div>
+		</div>-->
 	</div>
 </template>
 
@@ -38,7 +38,6 @@
 	/* https://github.com/charliekassel/vuejs-datepicker */
 	import Datepicker from 'vuejs-datepicker';
 	import {en, ru} from 'vuejs-datepicker/dist/locale'
-	
 	import moment from 'moment'
 	
 	const dateProps = {
@@ -53,7 +52,7 @@
 			lang: String,
 			state: Object,
 		},
-		data: function () {
+		data() {
 			return {
 				typedDate: '',
 				curLang: this.lang === 'ru' ? ru : en,
@@ -64,32 +63,38 @@
 		},
 		watch: {
 			typedDate(){
+				let status = '';
 				
-				let status;
-				let validated = /\d\d\.\d\d\.\d\d\d\d/.test(this.typedDate);
-				
-				if (validated) {
-					let validateDate = moment(this.typedDate, 'DD.MM.YYYY').isValid();
-					console.log(validateDate);
-					
-					if (this.state.disabledDates.from) {
-						status = moment(this.typedDate, 'DD.MM.YYYY').isBefore(this.state.disabledDates.from);
-					}
-					console.log('isBefore: ', status);
-					
-					if (this.state.disabledDates.to) {
-						status = moment(this.typedDate, 'DD.MM.YYYY').isAfter(this.state.disabledDates.to);
-					}
-					console.log('isAfter: ', status);
-					
-					if (this.state.disabledDates.from && this.state.disabledDates.to) {
-						status = moment(this.typedDate, 'DD.MM.YYYY').isBetween(this.state.disabledDates.to, this.state.disabledDates.from);
-					}
-					console.log('both: ', status);
-					console.log('status: ', status);
-					this.$emit('chosen-date', this.typedDate);
+				/* VALIDATOR */
+				if (this.typedDate === '' || this.typedDate === '__.__.____') {
+					status = 'isEmpty';
 				}
+				else if (!/\d\d\.\d\d\.\d\d\d\d/.test(this.typedDate)) {
+					status = 'isntFormat';
+				}
+				else if (!moment(this.typedDate, 'DD.MM.YYYY').isValid()) {
+					status = 'isntDate';
+				}
+				else if (this.state.disabledDates.from && this.state.disabledDates.to) {
+					if (!moment(this.typedDate, 'DD.MM.YYYY').isBetween(this.state.disabledDates.to, this.state.disabledDates.from, null, [])) {
+						status = 'isOutOfRange';
+					}
+				}
+				else if (this.state.disabledDates.to) {
+					if ( moment(this.typedDate, 'DD.MM.YYYY').isBefore(this.state.disabledDates.to) ) {
+						status = 'isBeforeRange';
+					}
+				}
+				else if (this.state.disabledDates.from) {
+					if ( moment(this.typedDate, 'DD.MM.YYYY').isAfter(this.state.disabledDates.from) ) {
+						status = 'isAfterRange';
+					}
+				}
+					
+				// statuses.error = !(Object.entries(statuses).length === 0 && statuses.constructor === Object);
 				
+				this.$emit('chosen-date', this.typedDate);
+				this.$emit('statuses', status);
 			}
 		},
 		computed: {
@@ -181,7 +186,7 @@
 		right: -1px;
 		top: -1px;
 		font-size: 14px;
-		padding: 0px 5px 15px;
+		padding: 0 5px 15px;
 		min-height: 172px;
 	}
 	

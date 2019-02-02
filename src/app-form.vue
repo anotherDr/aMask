@@ -69,17 +69,21 @@
 		</div>
 		
 		<div class="row">
-			<div class="col-md-4">
-				<!--/* MASKED DATEPICKER COMPONENT*/-->
+			<div class="col-md-4" :class="{'error': dateError}">
+				<!--
+				MASKED DATEPICKER COMPONENT
+				-->
 				<masked-datepicker
 						:lang="lang"
-						v-on:chosen-date="printResult"
+						@chosen-date="printResult"
+						@statuses="statusHandler"
 						:state="state"
 				/>
+				<div class="msg" v-show="dateError" v-html="dateErrorMsg"/>
+			</div>
 			<div class="col-md-4">
 				Masked Datepicker Result: {{maskedDatepickerResult}}
 			</div>
-		</div>
 		</div>
 		
 	</div>
@@ -95,6 +99,7 @@
 	import {en, ru} from 'vuejs-datepicker/dist/locale'
 	
 	import moment from 'moment'
+	import MESSAGES from './messages'
 	
 	const props = {
 		selector: '#phone',
@@ -120,6 +125,9 @@
 				dateFinish: '',
 				en: en,
 				ru: ru,
+				
+				dateError: false,
+				dateErrorMsg: '',
 				
 				/* MASKED DATEPICKER COMPONENT*/
 				maskedDatepickerResult: '',
@@ -188,6 +196,10 @@
 			printResult(result){
 				this.maskedDatepickerResult = result;
 			},
+			statusHandler(status){
+				this.dateError = !!status;
+				this.dateErrorMsg = status ? MESSAGES.ru[status] : '';
+			}
 		}
 	}
 </script>
@@ -214,6 +226,7 @@
 	.btn-datepicker:focus {
 		outline: none;
 	}
+	
 
 
 </style>
@@ -264,6 +277,15 @@
 		}
 		&.selected {
 			background: #6be6ff;
+		}
+	}
+	
+	.error {
+		input.form-control {
+			border: 1px solid #c00;
+		}
+		.msg {
+			color: #c00;
 		}
 	}
 </style>
