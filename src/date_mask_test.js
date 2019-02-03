@@ -17,7 +17,7 @@ function test(){
 	let testMasc = new AMask();
 	
 	testVal.forEach((it, idx)=>{
-		let res = testMasc.aMaskCore(it.val);
+		let res = testMasc.calcOutputValue(it.val);
 		console.log( idx, it.res === res, it.val , it.res, res );
 	});
 }

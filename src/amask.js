@@ -1,3 +1,4 @@
+// @ts-check
 'use strict';
 const version = '0.5.0';
 const defaultOptions = {
@@ -6,16 +7,20 @@ const defaultOptions = {
 	selector: '.amask'
 };
 
-export default class AMask {
+export default class AMask {    // A Mask
 	
 	constructor( opt = defaultOptions ) {
+		/** @type {string} */
 		this.selector = opt.selector || defaultOptions.selector;
+		/** @type {NodeListOf} */
 		this.elems = opt.elem || document.querySelectorAll(this.selector);
+		/** @type {string} */
 		this.pattern = opt.pattern || defaultOptions.pattern;
+		/** @type {string} */
 		this.placeholder = opt.placeholder || defaultOptions.placeholder;
-		/** @type number[] */
-		this.specPositions;
+		/** @type {string[]} */
 		this.patternArr = this.pattern.split('');
+		/** @type {number} */
 		this.patternLen = this.patternArr.length;
 	}
 	
@@ -24,7 +29,7 @@ export default class AMask {
 	 *  ----------------------------------------------------- */
 	
 	/**
-	 * returns version
+	 * method returns version
 	 * @returns {string}
 	 */
 	 static version() {
@@ -32,20 +37,23 @@ export default class AMask {
 	}
 	
 	/**
-	 * calculates OUTPUT VALUE which will show in the input field
+	 * method calculates OUTPUT VALUE which will show in the input field
 	 * @param {string} value
 	 * @returns {string}
 	 */
-	aMaskCore(value, position)  {
+	calcOutputValue(value)  {
 		let bufferArr = [],
 			/** @type {number} */
 			bufferLen = bufferArr.length,               // length of new (output) array
 			/** @type {string} */
 			placeholder = '_',
+			/** @type {string} */
 			valueArr = value.replace(/[^0-9.]+/g, ''),  // remove which aren't like those
+			/** @type {string} */
 			char = '',                                  // slice from value
 			/** @type {(number|string)} */
 			pat,                                        // slice from pattern
+			/** @type {string} */
 			inference;                                  // result
 		
 		for (let i = 0; i < this.patternLen; i++) {
@@ -75,11 +83,13 @@ export default class AMask {
 	}
 	
 	/**
-	 * calculates CURSOR POSITION
+	 * method calculates CURSOR POSITION
 	 * @param {number} position
+	 * @param {string} value
 	 * @returns {number}
 	 */
 	calcCursorPosition(position, value){
+		/** @type {string} */
 		let char = (value.length > 1) ? value.split('')[position-1] : value;
 		
 		if ( /[\s.\/()+\-]/.test(this.patternArr[position-1]) ) {
@@ -93,19 +103,22 @@ export default class AMask {
 	}
 	
 	/**
-	 * handler of keyup event : receives and emits value
+	 * method for keyup event : receives and emits {} : value and position
 	 * @param {Object} e
 	 * @returns {Object}
 	 * */
-	maskInput(e) {
-		
+	maskCore(e) {
+			/** @type {AMask} */
 		let th = this,
+			/** @type {Object} */
 			elem = e.currentTarget,
 			/** @type {string} */
 			value = elem.value,
 			/** @type {number} */
 			position = elem.selectionEnd,
+			/** @type {string} */
 			output,
+			/** @type {number} */
 			cursorPosition;
 			
 		if (e.key === 'Backspace'  ||
@@ -116,41 +129,50 @@ export default class AMask {
 			return {output: value, cursorPosition: position};
 		}
 		
-		output = th.aMaskCore(value);;
+		output = th.calcOutputValue(value);
 		cursorPosition = th.calcCursorPosition(position, value);
 		return {output, cursorPosition};
 		
 	}
 	
 	/**
+	 * method sets Attribute placeholder
+	 */
+	setPlaceholder(){
+		// this.elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
+		return this.calcOutputValue(this.placeholder);
+	}
+	
+	/* ====================================================================== */
+	/**
 	 * handler for vanilla js onKeyUp
 	 * @param e
 	 */
 	inputHandler(e) {
+			/** @type {AMask} */
 		let th = this,
 			/** @type {Object} */
 			elem,
+			/** @type {Object} */
 			inputParams;
 		
-		inputParams = th.maskInput(e);
+		inputParams = th.maskCore(e);
 		elem = e.target;
 		elem.value = inputParams.output;
 		elem.focus();
 		elem.setSelectionRange(inputParams.cursorPosition, inputParams.cursorPosition);
 	}
 	
-	setPlaceholder(){
-		// this.elem.setAttribute('placeholder', this.aMaskCore(this.placeholder));
-		return this.aMaskCore(this.placeholder);
-	}
 	
 	/**
 	 * add event for vanilla js 'keyup'
 	 */
 	init(){
-		let inputElems = this.elems;
-		inputElems.forEach((elem)=> {
-			elem.setAttribute('placeholder', this.aMaskCore(this.placeholder));
+		/** @type {NodeListOf} */
+		let inputElements = this.elems;
+		
+		inputElements.forEach((elem)=> {
+			elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
 			elem.addEventListener('keyup', (e) => this.inputHandler(e) );
 		});
 	}

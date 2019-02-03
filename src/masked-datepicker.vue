@@ -112,7 +112,7 @@
 				let th = this;
 				
 				let elem = e.target,
-					result = dateMask.maskInput(e);
+					result = dateMask.maskCore(e);
 				
 				th.typedDate = result.output;
 				elem.value = result.output;

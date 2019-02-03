@@ -161,7 +161,7 @@
 				let th = this;
 				
 				let elem = e.target,
-					result = phoneMask.maskInput(e);
+					result = phoneMask.maskCore(e);
 				
 				th.phone = result.output;
 				elem.value = result.output;
@@ -174,7 +174,7 @@
 				let th = this;
 				
 				let elem = e.target,
-					result = dateMask.maskInput(e);
+					result = dateMask.maskCore(e);
 				
 				th.dateStart = result.output;
 				elem.value = result.output;
