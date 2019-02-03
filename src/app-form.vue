@@ -227,11 +227,21 @@
 		outline: none;
 	}
 	
+	
 
 
 </style>
 
 <style lang="scss">
+	
+	.form-control:focus {
+		color: #495057;
+		background-color: #fff;
+		border-color: #ccc;
+		outline: 0;
+		box-shadow: 0 0 0 0 transparent;
+	}
+	
 	.vdp-datepicker {
 		position: absolute !important;
 		width: 100%;
