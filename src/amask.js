@@ -12,7 +12,7 @@ export default class AMask {    // A Mask
 	constructor( opt = defaultOptions ) {
 		/** @type {string} */
 		this.selector = opt.selector || defaultOptions.selector;
-		/** @type {NodeListOf} */
+		/** @type {NodeList} */
 		this.elems = opt.elem || document.querySelectorAll(this.selector);
 		/** @type {string} */
 		this.pattern = opt.pattern || defaultOptions.pattern;
@@ -24,7 +24,7 @@ export default class AMask {    // A Mask
 		this.patternLen = this.patternArr.length;
 	}
 	
-	/** -----------------------------------------------------
+	/* -----------------------------------------------------
 	 *  METHODS
 	 *  ----------------------------------------------------- */
 	
@@ -143,10 +143,13 @@ export default class AMask {    // A Mask
 		return this.calcOutputValue(this.placeholder);
 	}
 	
-	/* ====================================================================== */
+	/* -----------------------------------------------------
+	 *  METHODS for vanilla js
+	 *  ----------------------------------------------------- */
+	
 	/**
-	 * handler for vanilla js onKeyUp
-	 * @param e
+	 * handler used by init
+	 * @param {Object} e
 	 */
 	inputHandler(e) {
 			/** @type {AMask} */
@@ -163,12 +166,11 @@ export default class AMask {    // A Mask
 		elem.setSelectionRange(inputParams.cursorPosition, inputParams.cursorPosition);
 	}
 	
-	
 	/**
-	 * add event for vanilla js 'keyup'
+	 * method adds event 'keyup' for vanilla js uses inputHandler
 	 */
 	init(){
-		/** @type {NodeListOf} */
+		/** @type {NodeList} */
 		let inputElements = this.elems;
 		
 		inputElements.forEach((elem)=> {
