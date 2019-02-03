@@ -1,4 +1,5 @@
 
+import '../sass/main.scss'
 import AMask from './amask'
 
 console.log(AMask.version());
@@ -15,7 +16,7 @@ amask1.init();
 /* ====================================== */
 
 const params2 = {
-	selector: '.amask',
+	selector: '.js__amask',
 	spaceholder: '-',
 	pattern: '+9 (999) 999-99-99'
 };

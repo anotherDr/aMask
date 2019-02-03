@@ -1,12 +1,12 @@
 {
-  "name": "Another One Mask",
-  "version": "0.2.10",
+  "name": "Another-One-Mask",
+  "version": "0.5.0",
   "description": "Another One Input Mask for JS and Vue",
   "private": true,
-  "author": "amodeus",
+  "author": "amoDeus",
   "license": "MIT",
   "scripts": {
-    "webpack": "webpack --config=config/webpack.config.js",
+    "build": "webpack --config=config/webpack.config.js",
     "watch": "webpack --config=config/webpack.config.js --watch",
     "dev": "webpack-dev-server --config=config/webpack.config.js"
   },
@@ -15,6 +15,7 @@
     "babel-loader": "^7.1.5",
     "babel-preset-env": "^1.7.0",
     "css-loader": "^1.0.0",
+    "mini-css-extract-plugin": "^0.5.0",
     "node-sass": "^4.9.2",
     "sass-loader": "^7.0.3",
     "vue-loader": "^15.2.6",
@@ -25,6 +26,8 @@
     "webpack-dev-server": "^3.1.10"
   },
   "dependencies": {
+    "moment": "^2.24.0",
+    "style-loader": "^0.23.1",
     "vue": "^2.5.16",
     "vuejs-datepicker": "^1.5.4",
     "vuex": "^3.0.1"

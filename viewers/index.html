@@ -3,21 +3,59 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Title</title>
+	<link rel="stylesheet" href="/css/all.min.css">
+	<link rel="stylesheet" href="/dist/main.css">
+	
 </head>
 <body>
-	<h1>A Mask</h1>
-	<h2>JS</h2>
-	<h3>Single</h3>
-	<input type="text" id="dateStart">
-	<h3>Multiple</h3>
-	<input type="text" class="amask">
-	<input type="text" class="amask">
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h1>Another One Mask</h1>
+			
+			<h2>JS</h2>
+			
+			<h3>Single</h3>
+		</div>
+	</div>
 	
-	<h2>VUE</h2>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="form-group">
+				<input type="text" class="form-control" id="dateStart">
+			</div>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-12">
+			<h3>Multiple</h3>
+		</div>
+	</div>
+	
+	<div class="row">
+	
+		<div class="col-md-4">
+			<div class="form-group">
+				<input type="text" class="form-control js__amask" id="phone" autocomplete="off" />
+			</div>
+		</div>
+	
+		<div class="col-md-4">
+			<div class="form-group">
+				<input type="text" class="form-control js__amask" id="mobile" autocomplete="off" />
+			</div>
+		</div>
+	</div>
+	<hr class="separator"/>
 	<div id="app"></div>
-	
-	<script src="/dist/index-bundle.js"></script>
-	<script src="/dist/app-bundle.js"></script>
+</div>
+
+<footer style="min-height: 300px;">
+
+</footer>
+<script src="/dist/index-bundle.js"></script>
+<script src="/dist/app-bundle.js"></script>
 
 </body>
 </html>
