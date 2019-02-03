@@ -97,16 +97,7 @@ export default class AMask {
 	 * @param {Object} e
 	 * @returns {Object}
 	 * */
-	maskInput(e){
-		if (e.key === 'Backspace' ||
-			e.key === 'ArrowLeft' ||
-			e.key === 'ArrowUp' ||
-			e.key === 'ArrowRight' ||
-			e.key === 'ArrowDown' ) {
-			return new Promise((resolve, reject) => {
-				reject(new Error('Arrow Keys'));
-			});
-		}
+	maskInput(e) {
 		
 		let th = this,
 			elem = e.currentTarget,
@@ -116,23 +107,18 @@ export default class AMask {
 			position = elem.selectionEnd,
 			output,
 			cursorPosition;
-		
-		let promise1 = new Promise((resolve, reject)=>{
-			resolve( th.aMaskCore(value) );
-			reject( new Error('something wrong') );
-		});
-		
-		let promise2 = new Promise((resolve, reject)=>{
-			resolve( th.calcCursorPosition(position, value) );
-			reject( new Error('something wrong') );
-		});
 			
-		return Promise.all([promise1,promise2])
-			.then((result) => {
-				output = result[0];
-				cursorPosition = result[1];
-				return {output, cursorPosition};
-			});
+		if (e.key === 'Backspace'  ||
+			e.key === 'ArrowLeft'  ||
+			e.key === 'ArrowUp'    ||
+			e.key === 'ArrowRight' ||
+			e.key === 'ArrowDown' ) {
+			return {output: value, cursorPosition: position};
+		}
+		
+		output = th.aMaskCore(value);;
+		cursorPosition = th.calcCursorPosition(position, value);
+		return {output, cursorPosition};
 		
 	}
 	
@@ -146,15 +132,11 @@ export default class AMask {
 			elem,
 			inputParams;
 		
-		th.maskInput(e).then( (result) => {
-			inputParams = result;
-			elem = e.target;
-			elem.value = inputParams.output;
-			elem.focus();
-			elem.setSelectionRange(inputParams.cursorPosition, inputParams.cursorPosition);
-		}).catch( (error) => {
-			console.log(error.message)
-		});
+		inputParams = th.maskInput(e);
+		elem = e.target;
+		elem.value = inputParams.output;
+		elem.focus();
+		elem.setSelectionRange(inputParams.cursorPosition, inputParams.cursorPosition);
 	}
 	
 	setPlaceholder(){
@@ -162,17 +144,6 @@ export default class AMask {
 		return this.aMaskCore(this.placeholder);
 	}
 	
-	/**
-	 * handler for vue function
-	 * @param e
-	 */
-	vueFn(e) {
-		th.maskInput(e).then( (result) => {
-			let output = result[0],
-				cursorPosition = result[1];
-			return {output, cursorPosition};
-		})
-	}
 	/**
 	 * add event for vanilla js 'keyup'
 	 */

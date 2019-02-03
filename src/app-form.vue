@@ -160,34 +160,28 @@
 			phoneMaskinput(e){
 				let th = this;
 				
-				phoneMask.maskInput(e).then((result)=> {
-					
-					let elem = e.target;
-					
-					th.phone = result.output;
-					elem.value = result.output;
-					elem.focus();
-					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
-				}).catch( reason => {
-					console.log(reason.message);
-				})
+				let elem = e.target,
+					result = phoneMask.maskInput(e);
+				
+				th.phone = result.output;
+				elem.value = result.output;
+				elem.focus();
+				elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
+				
 			},
 			/* Date */
 			dateMaskinput(e){
 				let th = this;
 				
-				dateMask.maskInput(e).then((result)=> {
-					
-					let elem = e.target;
-					
-					th.dateStart = result.output;
-					elem.value = result.output;
-					elem.focus();
-					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
-				}).catch( reason => {
-					console.log(reason.message);
-				})
+				let elem = e.target,
+					result = dateMask.maskInput(e);
+				
+				th.dateStart = result.output;
+				elem.value = result.output;
+				elem.focus();
+				elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
 			},
+			
 			dateSelected(e){
 				this.dateStart = moment(e).format('DD.MM.YYYY');
 			},

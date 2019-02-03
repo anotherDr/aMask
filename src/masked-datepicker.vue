@@ -111,17 +111,13 @@
 			dateMaskinput(e) {
 				let th = this;
 				
-				dateMask.maskInput(e).then((result) => {
-					
-					let elem = e.target;
-					
-					th.typedDate = result.output;
-					elem.value = result.output;
-					elem.focus();
-					elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
-				}).catch(reason => {
-					console.log(reason.message);
-				})
+				let elem = e.target,
+					result = dateMask.maskInput(e);
+				
+				th.typedDate = result.output;
+				elem.value = result.output;
+				elem.focus();
+				elem.setSelectionRange(result.cursorPosition, result.cursorPosition);
 			},
 			dateSelected(e) {
 				this.typedDate = moment(e).format('DD.MM.YYYY');
