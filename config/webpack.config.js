@@ -15,7 +15,8 @@ module.exports = {
 	mode: 'development',
 	context: PATH,
 	entry: {
-		index: ['./src/index.js', './src/app.js'],
+		// index: ['./src/index.js', './src/app.js'],
+		index: ['./src/index.js'],
 	},
 	output: {
 		filename: '[name]-bundle.js',

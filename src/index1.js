@@ -1,6 +1,6 @@
 
 import '../sass/main.scss'
-import AMask from './amask2'
+import AMask from './amask'
 
 console.log(AMask.version());
 
