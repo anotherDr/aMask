@@ -6,8 +6,6 @@ const defaultOptions = {
 	placeholder: '_',
 	selector: '.amask'
 };
-console.log( { ...['a', 'b', 'c'] } );
-console.log( Object.assign({}, ['a', 'b', 'c'] ) );
 
 export default class AMask {    // A Mask
 	
@@ -21,27 +19,18 @@ export default class AMask {    // A Mask
 		/** @type {string} */
 		this.placeholder = opt.placeholder || defaultOptions.placeholder;
 		/** @type {string[]} */
-		this.patternArr = this.pattern.split('');
+		this.items = this.pattern.split('');
 		/** @type {number} */
-		this.patternLen = this.patternArr.length;
-		
-		/** @type {string[]} */
-		// this.items = Object.assign({}, this.patternArr);
-		this.items = { ...this.patternArr};
+		this.len = this.items.length;
+		/** @type {number} */
 		this.position = 0;
+		/** @type {string} */
+		this.key = ''
 	}
 	
 	/* -----------------------------------------------------
 	 *  METHODS
 	 *  ----------------------------------------------------- */
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	/**
 	 * method returns version
@@ -50,92 +39,29 @@ export default class AMask {    // A Mask
 	 static version() {
 		return `version ${version}`;
 	}
-	
-	/*/!**
-	 * method calculates OUTPUT VALUE which will show in the input field
-	 * @param {string} value
-	 * @returns {string}
-	 *!/
-	calcOutputValue(value)  {
-		let bufferArr = [],
-			/!** @type {number} *!/
-			bufferLen = bufferArr.length,               // length of new (output) array
-			/!** @type {string} *!/
-			placeholder = '_',
-			/!** @type {string} *!/
-			valueArr = value.replace(/[^0-9.]+/g, ''),  // remove which aren't like those
-			/!** @type {string} *!/
-			char = '',                                  // slice from value
-			/!** @type {(number|string)} *!/
-			pat,                                        // slice from pattern
-			/!** @type {string} *!/
-			inference;                                  // result
-		
-		for (let i = 0; i < this.patternLen; i++) {
-			char = valueArr[i];
-			bufferLen = bufferArr.length;
-			pat = this.patternArr[bufferLen];
-			
-			if (/\d/.test(pat)) {
-				if (/\d/.test(char)) {
-					bufferArr.push(char);
-				}
-				else if ( !char ) {
-					bufferArr.push(placeholder);
-				}
-				else {
-					/!* do nothing *!/
-				}
-			}
-			else if (/[\s.\/()+\-]/.test(pat) ) {
-				bufferArr.push(pat);
-				i--;
-			}
-		}
-		inference = bufferArr.slice(0, this.patternLen).join('');
-		
-		return inference;
+	makePlaceholder(){
+	 	return this.pattern.replace(/\d/g, this.placeholder);
 	}
-	*/
-	/*
-	/!**
-	 * method calculates CURSOR POSITION
-	 * @param {number} position
-	 * @param {string} value
-	 * @returns {number}
-	 *!/
-	calcCursorPosition(position, value){
-		/!** @type {string} *!/
-		let char = (value.length > 1) ? value.split('')[position-1] : value;
-		
-		if ( /[\s.\/()+\-]/.test(this.patternArr[position-1]) ) {
-			position++;
-			return this.calcCursorPosition(position, char);
-		}
-		else if ( !/[0-9]/.test(char) ) {
-			position--;
-		}
-		console.log('result: ', position);
-		return position;
-	}*/
 	
-	addItem(key, position) {
+	addItem() {
+	 	if (this.position > this.len) return;
+	 	
 		if (/\d/.test(this.items[this.position])) {
-			this.items[this.position] = key;
-		} else {
+			this.items[this.position] = this.key;
 			this.position++;
-			this.addItem(key, this.position);
 		}
-		this.position++;
+		else if (this.position < this.len-1) {
+			this.position++;
+			this.addItem();
+		}
+		else {
+			return;
+		}
+		
 	}
 	
 	outputValue(){
-		let len = Object.keys(this.items).length,
-			output = '';
-		for (let i = 0; i < len; i++ ) {
-			output +=  this.items[i];
-		}
-		return output;
+		return this.items.join('');
 	}
 	
 	/**
@@ -145,42 +71,27 @@ export default class AMask {    // A Mask
 	 * */
 	maskCore(e) {
 			/** @type {AMask} */
-		let th = this,
-			/** @type {string} */
-			key = e.key,
-			/** @type {number} */
-			positionStart = e.currentTarget.selectionStart,
-			position = e.currentTarget.selectionEnd,
-			/** @type {string} */
-			output,
-			/** @type {number} */
-			cursorPosition;
+		let th = this;
 			
-			console.log(key);
-			console.log(positionStart, position);
-			
-		if (e.key === 'Backspace'  ||
-			e.key === 'ArrowLeft'  ||
-			e.key === 'ArrowUp'    ||
-			e.key === 'ArrowRight' ||
-			e.key === 'ArrowDown' ) {
-			return {output: e.currentTarget.value, cursorPosition: position};
+		if ( /[^0-9]/.test(e.key) ) {
+			return;
 		}
+		th.key = e.key;
+		th.position = e.currentTarget.selectionEnd;
 		
-		this.addItem(key, position);
-		console.log(outputValue());
-		console.log(position);
+		console.log(th.key, th.position);
 		
+		this.addItem();
 		
+		console.log(this.outputValue(), this.position);
+		console.log('====================');
+		
+		return {
+			output: this.outputValue(),
+			position: this.position
+		}
 	}
 	
-	/**
-	 * method sets Attribute placeholder
-	 */
-	setPlaceholder(elem){
-		elem.setAttribute( 'placeholder', this.outputValue() );
-		return this.outputValue(this.placeholder);
-	}
 	
 	/* -----------------------------------------------------
 	 *  METHODS for vanilla js
@@ -191,18 +102,18 @@ export default class AMask {    // A Mask
 	 * @param {Object} e
 	 */
 	inputHandler(e) {
-			/** @type {AMask} */
+		/** @type {AMask} */
 		let th = this,
-			/** @type {Object} */
-			elem,
-			/** @type {Object} */
-			inputParams;
+		/** @type {Object} */
+		elem,
+		/** @type {Object} */
+		inputParams;
 		
 		inputParams = th.maskCore(e);
 		elem = e.target;
-		// elem.value = inputParams.output;
-		// elem.focus();
-		// elem.setSelectionRange(inputParams.cursorPosition, inputParams.cursorPosition);
+		elem.value = inputParams.output;
+		elem.focus();
+		elem.setSelectionRange(inputParams.position, inputParams.position);
 	}
 	
 	/**
@@ -213,7 +124,7 @@ export default class AMask {    // A Mask
 		let inputElements = this.elems;
 		
 		inputElements.forEach((elem)=> {
-			elem.setAttribute('placeholder', this.placeholder);
+			elem.setAttribute( 'placeholder', this.makePlaceholder() );
 			elem.addEventListener('keydown', (e) => this.inputHandler(e) );
 		});
 	}
