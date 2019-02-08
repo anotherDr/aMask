@@ -5,6 +5,7 @@
 			       class="form-control"
 			       v-model="typedDate"
 			       placeholder="__.__.____"
+			       @down="dateMaskinput($event)"
 			       @keyup="dateMaskinput($event)"
 			/>
 			<div class="input-group-append">

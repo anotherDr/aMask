@@ -1,6 +1,6 @@
 // @ts-check
 'use strict';
-const version = '0.6.0';
+const version = '0.6.1';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
@@ -9,7 +9,7 @@ const defaultOptions = {
 
 export default class AMask {    // A Mask
 	
-	constructor( opt = defaultOptions ) {
+	constructor(opt = defaultOptions) {
 		/** @type {string} */
 		this.selector = opt.selector || defaultOptions.selector;
 		/** @type {NodeList} */
@@ -32,7 +32,7 @@ export default class AMask {    // A Mask
 	 * method returns version
 	 * @returns {string}
 	 */
-	 static version() {
+	static version() {
 		return `version ${version}`;
 	}
 	
@@ -41,7 +41,7 @@ export default class AMask {    // A Mask
 	 * @param {string} value
 	 * @returns {string}
 	 */
-	calcOutputValue(value)  {
+	calcOutputValue(value) {
 		let bufferArr = [],
 			/** @type {number} */
 			bufferLen = bufferArr.length,               // length of new (output) array
@@ -64,15 +64,12 @@ export default class AMask {    // A Mask
 			if (/\d/.test(pat)) {
 				if (/\d/.test(char)) {
 					bufferArr.push(char);
-				}
-				else if ( !char ) {
+				} else if (!char) {
 					bufferArr.push(placeholder);
-				}
-				else {
+				} else {
 					/* do nothing */
 				}
-			}
-			else if (/[\s.\/()+\-]/.test(pat) ) {
+			} else if (/[\s.\/()+\-]/.test(pat)) {
 				bufferArr.push(pat);
 				i--;
 			}
@@ -88,15 +85,14 @@ export default class AMask {    // A Mask
 	 * @param {string} value
 	 * @returns {number}
 	 */
-	calcCursorPosition(position, value){
+	calcCursorPosition(position, value) {
 		/** @type {string} */
-		let char = (value.length > 1) ? value.split('')[position-1] : value;
+		let char = (value.length > 1) ? value.split('')[position - 1] : value;
 		
-		if ( /[\s.\/()+\-]/.test(this.patternArr[position-1]) ) {
+		if (/[\s.\/()+\-]/.test(this.patternArr[position - 1])) {
 			position++;
 			return this.calcCursorPosition(position, char);
-		}
-		else if ( !/[0-9]/.test(char) ) {
+		} else if (!/[0-9]/.test(char)) {
 			position--;
 		}
 		return position;
@@ -108,24 +104,26 @@ export default class AMask {    // A Mask
 	 * @returns {Object}
 	 * */
 	maskCore(e) {
-			/** @type {AMask} */
+		/** @type {AMask} */
 		let th = this,
 			/** @type {Object} */
 			elem = e.currentTarget,
 			/** @type {string} */
+			key = /[0-9]/.test(e.key) ? e.key : '#',
+			/** @type {string} */
 			value = elem.value,
 			/** @type {number} */
-			position = elem.selectionEnd,
+			position = elem.selectionEnd + 1,
 			/** @type {string} */
 			output,
 			/** @type {number} */
 			cursorPosition;
-			
-		if (e.key === 'Backspace'  ||
-			e.key === 'ArrowLeft'  ||
-			e.key === 'ArrowUp'    ||
+		
+		if (e.key === 'Backspace' ||
+			e.key === 'ArrowLeft' ||
+			e.key === 'ArrowUp' ||
 			e.key === 'ArrowRight' ||
-			e.key === 'ArrowDown' ) {
+			e.key === 'ArrowDown') {
 			return {output: value, cursorPosition: position};
 		}
 		
@@ -138,7 +136,7 @@ export default class AMask {    // A Mask
 	/**
 	 * method sets Attribute placeholder
 	 */
-	setPlaceholder(){
+	setPlaceholder() {
 		// this.elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
 		return this.calcOutputValue(this.placeholder);
 	}
@@ -152,7 +150,7 @@ export default class AMask {    // A Mask
 	 * @param {Object} e
 	 */
 	inputHandler(e) {
-			/** @type {AMask} */
+		/** @type {AMask} */
 		let th = this,
 			/** @type {Object} */
 			elem,
@@ -169,13 +167,14 @@ export default class AMask {    // A Mask
 	/**
 	 * method adds event 'keyup' for vanilla js uses inputHandler
 	 */
-	init(){
+	init() {
 		/** @type {NodeList} */
 		let inputElements = this.elems;
 		
-		inputElements.forEach((elem)=> {
+		inputElements.forEach((elem) => {
 			elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
-			elem.addEventListener('keyup', (e) => this.inputHandler(e) );
+			elem.addEventListener('keydown', (e) => this.inputHandler(e));
+			elem.addEventListener('keyup', (e) => this.inputHandler(e));
 		});
 	}
 }

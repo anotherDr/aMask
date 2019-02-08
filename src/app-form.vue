@@ -14,6 +14,7 @@
 					<input type="text"
 					       class="form-control"
 					       :placeholder="setPhonePlaceholder()"
+					       @keydown="phoneMaskinput($event)"
 					       @keyup="phoneMaskinput($event)"
 					/>
 				</div>
@@ -36,6 +37,7 @@
 					       class="form-control"
 					       v-model="dateStart"
 					       placeholder="__.__.____"
+					       @keydown="dateMaskinput($event)"
 					       @keyup="dateMaskinput($event)"
 					/>
 					<div class="input-group-append">
