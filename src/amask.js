@@ -22,6 +22,8 @@ export default class AMask {    // A Mask
 		this.patternArr = this.pattern.split('');
 		/** @type {number} */
 		this.patternLen = this.patternArr.length;
+		
+		this.firstTime = true
 	}
 	
 	/* -----------------------------------------------------
@@ -41,7 +43,7 @@ export default class AMask {    // A Mask
 	 * @param {string} value
 	 * @returns {string}
 	 */
-	calcOutputValue(value) {
+	calcOutputValue(value,key, position) {
 		let bufferArr = [],
 			/** @type {number} */
 			bufferLen = bufferArr.length,               // length of new (output) array
@@ -55,6 +57,11 @@ export default class AMask {    // A Mask
 			pat,                                        // slice from pattern
 			/** @type {string} */
 			inference;                                  // result
+		
+		if (this.firstTime) {
+			bufferArr = Array.from(this.pattern.replace(/\d/g, this.placeholder).split(''));
+			this.firstTime = false;
+		}
 		
 		for (let i = 0; i < this.patternLen; i++) {
 			char = valueArr[i];
@@ -109,7 +116,7 @@ export default class AMask {    // A Mask
 			/** @type {Object} */
 			elem = e.currentTarget,
 			/** @type {string} */
-			// key = /[0-9]/.test(e.key) ? e.key : '#',
+			key = /[0-9]/.test(e.key) ? e.key : '#',
 			/** @type {string} */
 			value = elem.value,
 			/** @type {number} */
@@ -120,12 +127,14 @@ export default class AMask {    // A Mask
 			output = value,
 			/** @type {number} */
 			cursorPosition;
+			
+		console.log( 'start: ', positionEnd );
 		
 		if (e.key === 'Backspace') {
 			// if (positionStart !== positionEnd) {
 			// 	cursorPosition = positionStart;
 			// }
-			cursorPosition = positionEnd    ;
+			cursorPosition = positionEnd;
 		}
 		else if (e.key === 'ArrowLeft') {
 			cursorPosition = positionEnd;
@@ -137,10 +146,12 @@ export default class AMask {    // A Mask
 			cursorPosition = positionEnd;
 		}
 		else {
-			positionEnd = elem.selectionEnd + 1;
-			output = th.calcOutputValue(value);
+			positionEnd = elem.selectionEnd + 1; // + 1
+			output = th.calcOutputValue(value, key, elem.selectionEnd);
 			cursorPosition = th.calcCursorPosition(positionEnd, value);
 		}
+		
+		console.log( '1: ', cursorPosition );
 		
 		return {output, cursorPosition};
 		
@@ -186,8 +197,17 @@ export default class AMask {    // A Mask
 		
 		inputElements.forEach((elem) => {
 			elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
-			elem.addEventListener('keydown', (e) => this.inputHandler(e));
-			// elem.addEventListener('keyup', (e) => this.inputHandler(e));
+			elem.addEventListener('keydown', (e) => this.inputHandler(e, 1));
+			elem.addEventListener('keyup', (e) => {
+				// this.inputHandler(e, 2);
+				let position = elem.selectionEnd;
+				elem.value = this.calcOutputValue(e.currentTarget.value);
+				elem.focus();
+				// position++;
+				console.log( '2: ', position );
+				
+				elem.setSelectionRange(position, position);
+			});
 		});
 	}
 }
