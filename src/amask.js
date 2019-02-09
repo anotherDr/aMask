@@ -109,26 +109,39 @@ export default class AMask {    // A Mask
 			/** @type {Object} */
 			elem = e.currentTarget,
 			/** @type {string} */
-			key = /[0-9]/.test(e.key) ? e.key : '#',
+			// key = /[0-9]/.test(e.key) ? e.key : '#',
 			/** @type {string} */
 			value = elem.value,
 			/** @type {number} */
-			position = elem.selectionEnd + 1,
+			positionStart = elem.selectionStart,
+			/** @type {number} */
+			positionEnd = elem.selectionEnd,
 			/** @type {string} */
-			output,
+			output = value,
 			/** @type {number} */
 			cursorPosition;
 		
-		if (e.key === 'Backspace' ||
-			e.key === 'ArrowLeft' ||
-			e.key === 'ArrowUp' ||
-			e.key === 'ArrowRight' ||
-			e.key === 'ArrowDown') {
-			return {output: value, cursorPosition: position};
+		if (e.key === 'Backspace') {
+			// if (positionStart !== positionEnd) {
+			// 	cursorPosition = positionStart;
+			// }
+			cursorPosition = positionEnd    ;
+		}
+		else if (e.key === 'ArrowLeft') {
+			cursorPosition = positionEnd;
+		}
+		else if (e.key === 'ArrowRight') {
+			cursorPosition = positionEnd;
+		}
+		else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+			cursorPosition = positionEnd;
+		}
+		else {
+			positionEnd = elem.selectionEnd + 1;
+			output = th.calcOutputValue(value);
+			cursorPosition = th.calcCursorPosition(positionEnd, value);
 		}
 		
-		output = th.calcOutputValue(value);
-		cursorPosition = th.calcCursorPosition(position, value);
 		return {output, cursorPosition};
 		
 	}
@@ -146,7 +159,7 @@ export default class AMask {    // A Mask
 	 *  ----------------------------------------------------- */
 	
 	/**
-	 * handler used by init
+	 * output handler used by init
 	 * @param {Object} e
 	 */
 	inputHandler(e) {
@@ -174,7 +187,7 @@ export default class AMask {    // A Mask
 		inputElements.forEach((elem) => {
 			elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
 			elem.addEventListener('keydown', (e) => this.inputHandler(e));
-			elem.addEventListener('keyup', (e) => this.inputHandler(e));
+			// elem.addEventListener('keyup', (e) => this.inputHandler(e));
 		});
 	}
 }
