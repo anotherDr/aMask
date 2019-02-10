@@ -23,7 +23,11 @@ export default class AMask {    // A Mask
 		/** @type {number} */
 		this.patternLen = this.patternArr.length;
 		
-		this.firstTime = true
+		this.firstTime = true;
+		this.bufferArr = [];
+		this.bufferArrLen = 0;
+		this.cursorPosition = 0;
+		this.isKeyDown = true;
 	}
 	
 	/* -----------------------------------------------------
@@ -37,20 +41,98 @@ export default class AMask {    // A Mask
 	static version() {
 		return `version ${version}`;
 	}
+	prepareBuffer(){
+		if (this.firstTime) {
+			this.bufferArr = Array.from(this.pattern.replace(/\d/g, this.placeholder).split(''));
+			this.bufferArrLen = this.bufferArr.length;
+			this.firstTime = false;
+		}
+	}
+	onKeyDownHandler(e){
+		
+		let th = this,
+			position = e.target.selectionEnd,
+			isRange = e.target.selectionStart !== e.target.selectionEnd,
+			key =  e.key;
+		
+		this.isKeyDown = true;
+		// if (e.key === 'Backspace' && isRange) {
+		// 	th.cursorPosition = e.target.selectionStart;
+		// }
+		// else
+		if (e.key === 'Backspace') {
+			th.cursorPosition = position;
+			this.isKeyDown = false;
+			return false;
+		}
+		else if (e.key === 'ArrowLeft') {
+			th.cursorPosition = position;
+			this.isKeyDown = false;
+			return false;
+		}
+		else if (e.key === 'ArrowRight') {
+			th.cursorPosition = position;
+			this.isKeyDown = false;
+			return false;
+		}
+		else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+			th.cursorPosition = position;
+			this.isKeyDown = false;
+			return false;
+		}
+		else {
+			e.preventDefault();
+			function insertion(key, position){
+				if (/\d/.test( th.patternArr[position] ) ) {
+					if (/[0-9]/.test(key)) {
+						th.bufferArr[position] = key;
+						th.cursorPosition = position + 1;
+					}
+				}
+				else if ( /[\s.\/()+\-]/.test( th.patternArr[position] ) ) {
+					th.cursorPosition = position + 1;
+					insertion(key, th.cursorPosition);
+				}
+				else {
+					th.cursorPosition = position;
+				}
+			}
+			insertion(key, position);
+		}
+		
+		let output = this.bufferArr.join('');
+		console.log(output);
+		this.onKeyUpHandler(e.target);
+	}
+	
+	onKeyUpHandler(elem){
+		if (!this.isKeyDown) return;
+		
+		let output = this.bufferArr.join('');
+		let cursor = this.cursorPosition;
+		
+		console.log('output: ', output);
+		
+		elem.value = output;
+		elem.focus();
+		elem.setSelectionRange(cursor, cursor);
+		
+		return {output, cursor};
+	}
 	
 	/**
 	 * method calculates OUTPUT VALUE which will show in the input field
 	 * @param {string} value
 	 * @returns {string}
 	 */
-	calcOutputValue(value,key, position) {
+	calcOutputValue(value, key, position) {
 		let bufferArr = [],
 			/** @type {number} */
 			bufferLen = bufferArr.length,               // length of new (output) array
 			/** @type {string} */
 			placeholder = '_',
 			/** @type {string} */
-			valueArr = value.replace(/[^0-9.]+/g, ''),  // remove which aren't like those
+			valueArr = value.replace(/[^0-9]+/g, ''),  // remove which aren't like those
 			/** @type {string} */
 			char = '',                                  // slice from value
 			/** @type {(number|string)} */
@@ -59,14 +141,16 @@ export default class AMask {    // A Mask
 			inference;                                  // result
 		
 		if (this.firstTime) {
-			bufferArr = Array.from(this.pattern.replace(/\d/g, this.placeholder).split(''));
+			this.bufferArr = Array.from(this.pattern.replace(/\d/g, this.placeholder).split(''));
+			this.bufferArrLen = this.bufferArr.length;
 			this.firstTime = false;
 		}
 		
+		
 		for (let i = 0; i < this.patternLen; i++) {
-			char = valueArr[i];
-			bufferLen = bufferArr.length;
-			pat = this.patternArr[bufferLen];
+			char = valueArr[i];                 // one char from value
+			bufferLen = bufferArr.length;       // length of buffer
+			pat = this.patternArr[bufferLen];   // pattern piece according to last buffer char
 			
 			if (/\d/.test(pat)) {
 				if (/\d/.test(char)) {
@@ -162,7 +246,9 @@ export default class AMask {    // A Mask
 	 */
 	setPlaceholder() {
 		// this.elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
-		return this.calcOutputValue(this.placeholder);
+		// return this.calcOutputValue(this.placeholder);
+		
+		return this.bufferArr.join('');
 	}
 	
 	/* -----------------------------------------------------
@@ -194,20 +280,14 @@ export default class AMask {    // A Mask
 	init() {
 		/** @type {NodeList} */
 		let inputElements = this.elems;
+		this.prepareBuffer();
 		
 		inputElements.forEach((elem) => {
-			elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
-			elem.addEventListener('keydown', (e) => this.inputHandler(e, 1));
-			elem.addEventListener('keyup', (e) => {
-				// this.inputHandler(e, 2);
-				let position = elem.selectionEnd;
-				elem.value = this.calcOutputValue(e.currentTarget.value);
-				elem.focus();
-				// position++;
-				console.log( '2: ', position );
-				
-				elem.setSelectionRange(position, position);
-			});
+			// elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
+			elem.setAttribute('placeholder', this.setPlaceholder());
+			// elem.addEventListener('keydown', (e) => this.inputHandler(e, 1));
+			elem.addEventListener('keydown', (e) => this.onKeyDownHandler(e));
+			// elem.addEventListener('keyup', () => this.onKeyUpHandler(elem));
 		});
 	}
 }
