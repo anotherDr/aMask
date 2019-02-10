@@ -51,37 +51,36 @@ export default class AMask {    // A Mask
 	onKeyDownHandler(e){
 		
 		let th = this,
+			startPosition = e.target.selectionStart,
 			position = e.target.selectionEnd,
 			isRange = e.target.selectionStart !== e.target.selectionEnd,
 			key =  e.key;
 		
-		this.isKeyDown = true;
-		// if (e.key === 'Backspace' && isRange) {
-		// 	th.cursorPosition = e.target.selectionStart;
-		// }
-		// else
+		this.isKeyDown = false;
+		
 		if (e.key === 'Backspace') {
-			th.cursorPosition = position;
-			this.isKeyDown = false;
-			return false;
+			for (let i = startPosition; i <= position; i++) {
+				if (/\d/.test( th.patternArr[i] ) ) {
+					th.bufferArr[i] = this.placeholder;
+				}
+			}
+			th.cursorPosition = startPosition;
 		}
 		else if (e.key === 'ArrowLeft') {
 			th.cursorPosition = position;
-			this.isKeyDown = false;
 			return false;
 		}
 		else if (e.key === 'ArrowRight') {
 			th.cursorPosition = position;
-			this.isKeyDown = false;
 			return false;
 		}
 		else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
 			th.cursorPosition = position;
-			this.isKeyDown = false;
 			return false;
 		}
 		else {
 			e.preventDefault();
+			this.isKeyDown = true;
 			function insertion(key, position){
 				if (/\d/.test( th.patternArr[position] ) ) {
 					if (/[0-9]/.test(key)) {
