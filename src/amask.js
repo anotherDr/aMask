@@ -1,6 +1,6 @@
 // @ts-check
 'use strict';
-const version = '0.6.0';
+const version = '0.7.0';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
@@ -103,7 +103,7 @@ export default class AMask {    // A Mask
 	}
 	
 	/**
-	 * method for keyup event : receives and emits {} : value and position
+	 * method for input event : receives and emits {} : value and position
 	 * @param {Object} e
 	 * @returns {Object}
 	 * */
@@ -167,7 +167,7 @@ export default class AMask {    // A Mask
 	}
 	
 	/**
-	 * method adds event 'keyup' for vanilla js uses inputHandler
+	 * method adds event 'input' for vanilla js uses inputHandler
 	 */
 	init(){
 		/** @type {NodeList} */
@@ -175,7 +175,7 @@ export default class AMask {    // A Mask
 		
 		inputElements.forEach((elem)=> {
 			elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
-			elem.addEventListener('keyup', (e) => this.inputHandler(e) );
+			elem.addEventListener('input', (e) => this.inputHandler(e) );
 		});
 	}
 }

@@ -5,7 +5,7 @@
 			       class="form-control"
 			       v-model="typedDate"
 			       placeholder="__.__.____"
-			       @keyup="dateMaskinput($event)"
+			       @input="dateMaskinput($event)"
 			/>
 			<div class="input-group-append">
 				<button class="btn btn-outline-secondary btn-datepicker">

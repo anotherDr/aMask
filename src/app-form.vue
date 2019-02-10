@@ -14,7 +14,7 @@
 					<input type="text"
 					       class="form-control"
 					       :placeholder="setPhonePlaceholder()"
-					       @keyup="phoneMaskinput($event)"
+					       @input="phoneMaskinput($event)"
 					/>
 				</div>
 			</div>
@@ -36,7 +36,7 @@
 					       class="form-control"
 					       v-model="dateStart"
 					       placeholder="__.__.____"
-					       @keyup="dateMaskinput($event)"
+					       @input="dateMaskinput($event)"
 					/>
 					<div class="input-group-append">
 						<button class="btn btn-outline-secondary btn-datepicker">
