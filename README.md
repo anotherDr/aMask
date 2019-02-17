@@ -4,6 +4,8 @@ Another One Input Mask for JS and Vue
 And
 Vue masked-datepicker component
 
-version 0.6.0
+version 0.6.7
 
-I am learning
+Vanilla JS Only
+
+TODO: for VUE

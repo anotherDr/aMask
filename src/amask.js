@@ -1,6 +1,6 @@
 // @ts-check
 'use strict';
-const version = '0.6.1';
+const version = '0.6.7';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
