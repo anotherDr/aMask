@@ -46,6 +46,7 @@ export default class AMask {    // A Mask
 			this.bufferArr = Array.from(this.pattern.replace(/\d/g, this.placeholder).split(''));
 			this.bufferArrLen = this.bufferArr.length;
 			this.firstTime = false;
+			return this.bufferArr;
 		}
 	}
 	onKeyDownHandler(e){
@@ -125,9 +126,7 @@ export default class AMask {    // A Mask
 	 * @returns {string}
 	 */
 	calcOutputValue(value, key, position) {
-		let bufferArr = [],
-			/** @type {number} */
-			bufferLen = bufferArr.length,               // length of new (output) array
+		let
 			/** @type {string} */
 			placeholder = '_',
 			/** @type {string} */
@@ -139,32 +138,33 @@ export default class AMask {    // A Mask
 			/** @type {string} */
 			inference;                                  // result
 		
-		if (this.firstTime) {
+		this.prepareBuffer();
+		/*if (this.firstTime) {
 			this.bufferArr = Array.from(this.pattern.replace(/\d/g, this.placeholder).split(''));
 			this.bufferArrLen = this.bufferArr.length;
 			this.firstTime = false;
-		}
+		}*/
 		
 		
 		for (let i = 0; i < this.patternLen; i++) {
 			char = valueArr[i];                 // one char from value
-			bufferLen = bufferArr.length;       // length of buffer
-			pat = this.patternArr[bufferLen];   // pattern piece according to last buffer char
+			this.bufferArrLen = this.bufferArr.length;       // length of buffer
+			pat = this.patternArr[this.bufferArrLen];   // pattern piece according to last buffer char
 			
 			if (/\d/.test(pat)) {
 				if (/\d/.test(char)) {
-					bufferArr.push(char);
+					this.bufferArr.push(char);
 				} else if (!char) {
-					bufferArr.push(placeholder);
+					this.bufferArr.push(placeholder);
 				} else {
 					/* do nothing */
 				}
 			} else if (/[\s.\/()+\-]/.test(pat)) {
-				bufferArr.push(pat);
+				this.bufferArr.push(pat);
 				i--;
 			}
 		}
-		inference = bufferArr.slice(0, this.patternLen).join('');
+		inference = this.bufferArr.slice(0, this.patternLen).join('');
 		
 		return inference;
 	}
@@ -186,6 +186,13 @@ export default class AMask {    // A Mask
 			position--;
 		}
 		return position;
+	}
+	
+	delete(start, end) {
+		let i = start-1;
+		for (i; i < end; i++){
+			this.bufferArr[i] = this.placeholder;
+		}
 	}
 	
 	/**
@@ -211,13 +218,14 @@ export default class AMask {    // A Mask
 			/** @type {number} */
 			cursorPosition;
 			
-		console.log( 'start: ', positionEnd );
+		// console.log( 'start: ', positionEnd );
 		
 		if (e.key === 'Backspace') {
-			// if (positionStart !== positionEnd) {
-			// 	cursorPosition = positionStart;
-			// }
-			cursorPosition = positionEnd;
+			e.preventDefault();
+			this.delete(positionStart, positionEnd);
+			output = this.bufferArr.join('');
+			cursorPosition = positionStart;
+			
 		}
 		else if (e.key === 'ArrowLeft') {
 			cursorPosition = positionEnd;
@@ -234,7 +242,7 @@ export default class AMask {    // A Mask
 			cursorPosition = th.calcCursorPosition(positionEnd, value);
 		}
 		
-		console.log( '1: ', cursorPosition );
+		// console.log( '1: ', cursorPosition );
 		
 		return {output, cursorPosition};
 		
@@ -246,7 +254,7 @@ export default class AMask {    // A Mask
 	setPlaceholder() {
 		// this.elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
 		// return this.calcOutputValue(this.placeholder);
-		
+		this.prepareBuffer();
 		return this.bufferArr.join('');
 	}
 	
@@ -279,7 +287,7 @@ export default class AMask {    // A Mask
 	init() {
 		/** @type {NodeList} */
 		let inputElements = this.elems;
-		this.prepareBuffer();
+		// this.prepareBuffer();
 		
 		inputElements.forEach((elem) => {
 			// elem.setAttribute('placeholder', this.calcOutputValue(this.placeholder));
