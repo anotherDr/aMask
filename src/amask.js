@@ -1,6 +1,10 @@
+/*!
+ * Another One JS Input Mask
+ * Copyright © 2019 anotherDr (Dave R.S.) | MIT license | https://github.com/anotherDr/AnotherOne__InputMask
+ */
 // @ts-check
 'use strict';
-const version = '0.7.0';
+const version = '0.7.1';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
@@ -98,6 +102,9 @@ export default class AMask {    // A Mask
 		}
 		else if ( !/[0-9]/.test(char) ) {
 			position--;
+			if (position < 0) {
+				position = 0;
+			}
 		}
 		return position;
 	}
@@ -107,7 +114,7 @@ export default class AMask {    // A Mask
 	 * @param {Object} e
 	 * @returns {Object}
 	 * */
-	maskCore(e) {
+	maskCore(e,kde) {
 			/** @type {AMask} */
 		let th = this,
 			/** @type {Object} */
@@ -116,16 +123,25 @@ export default class AMask {    // A Mask
 			value = elem.value,
 			/** @type {number} */
 			position = elem.selectionEnd,
+			/** @type {number} */
+			positionStart = elem.selectionStart,
 			/** @type {string} */
 			output,
 			/** @type {number} */
 			cursorPosition;
-			
-		if (e.key === 'Backspace'  ||
-			e.key === 'ArrowLeft'  ||
-			e.key === 'ArrowUp'    ||
-			e.key === 'ArrowRight' ||
-			e.key === 'ArrowDown' ) {
+		
+			console.log(kde);
+		
+		/* for Chrome */
+		// if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
+		// 	return {output: value, cursorPosition: positionStart};
+		// }
+		
+		if (kde.key === 'Backspace'  ||
+			kde.key === 'ArrowLeft'  ||
+			kde.key === 'ArrowUp'    ||
+			kde.key === 'ArrowRight' ||
+			kde.key === 'ArrowDown' ) {
 			return {output: value, cursorPosition: position};
 		}
 		

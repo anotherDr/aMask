@@ -5,10 +5,11 @@
 			       class="form-control"
 			       v-model="typedDate"
 			       placeholder="__.__.____"
+			       @keydown="dateKeydown($event)"
 			       @input="dateMaskinput($event)"
 			/>
 			<div class="input-group-append">
-				<button class="btn btn-outline-secondary btn-datepicker">
+				<div class="btn btn-outline-secondary btn-datepicker">
 					<i class="far fa-calendar"></i>
 					<datepicker
 							@selected="dateSelected"
@@ -18,9 +19,10 @@
 							:value="computedDate"
 							:disabledDates="state.disabledDates"
 					/>
-				</button>
+				</div>
 			</div>
 		</div>
+		<!-- for test -->
 		<!--<div v-if="test" class="clearfix">
 			<div>
 				{{computedDate}}
@@ -35,6 +37,7 @@
 <script>
 	import AMask from './amask'                 // mask core module
 	
+	/* VUEJS-DATEPICKER */
 	/* https://github.com/charliekassel/vuejs-datepicker */
 	import Datepicker from 'vuejs-datepicker';
 	import {en, ru} from 'vuejs-datepicker/dist/locale'
@@ -54,6 +57,7 @@
 		},
 		data() {
 			return {
+				kde: null,
 				typedDate: '',
 				curLang: this.lang === 'ru' ? ru : en,
 				
@@ -108,11 +112,15 @@
 		},
 		methods: {
 			/* Date */
+			dateKeydown(e) {
+				console.log(e)
+				this.kde = e;
+			},
 			dateMaskinput(e) {
 				let th = this;
 				
 				let elem = e.target,
-					result = dateMask.maskCore(e);
+					result = dateMask.maskCore(e, th.kde);
 				
 				th.typedDate = result.output;
 				elem.value = result.output;

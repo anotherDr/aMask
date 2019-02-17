@@ -14,6 +14,7 @@
 					<input type="text"
 					       class="form-control"
 					       :placeholder="setPhonePlaceholder()"
+					       @keydown="phoneKeydown($event)"
 					       @input="phoneMaskinput($event)"
 					/>
 				</div>
@@ -120,6 +121,10 @@
 		name: 'app-form',
 		data: function(){
 			return {
+				/* ---------------------------------------------
+				 * MASKED METHODS
+				 * --------------------------------------------- */
+				kde: null,
 				phone: '',
 				dateStart: '',
 				dateFinish: '',
@@ -154,14 +159,20 @@
 		// 	amaskdir,
 		// },
 		methods: {
+			/* ---------------------------------------------
+			 * MASKED METHODS
+			 * --------------------------------------------- */
 			setPhonePlaceholder(){
 				return phoneMask.setPlaceholder();
+			},
+			phoneKeydown(e){
+				this.kde = e;
 			},
 			phoneMaskinput(e){
 				let th = this;
 				
 				let elem = e.target,
-					result = phoneMask.maskCore(e);
+					result = phoneMask.maskCore(e, th.kde);
 				
 				th.phone = result.output;
 				elem.value = result.output;
@@ -186,7 +197,9 @@
 				this.dateStart = moment(e).format('DD.MM.YYYY');
 			},
 			
-			/* MASKED DATEPICKER COMPONENT*/
+			/* ---------------------------------------------
+			 * MASKED DATEPICKER COMPONENT
+			 * --------------------------------------------- */
 			printResult(result){
 				this.maskedDatepickerResult = result;
 			},
