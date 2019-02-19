@@ -4,7 +4,7 @@
  */
 // @ts-check
 'use strict';
-const version = '0.7.1';
+const version = '0.7.2';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
@@ -130,7 +130,7 @@ export default class AMask {    // A Mask
 			/** @type {number} */
 			cursorPosition;
 		
-			console.log(kde);
+			// console.log(kde);
 		
 		/* for Chrome */
 		// if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {

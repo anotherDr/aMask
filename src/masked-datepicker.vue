@@ -22,15 +22,15 @@
 				</div>
 			</div>
 		</div>
-		<!-- for test -->
-		<!--<div v-if="test" class="clearfix">
+		 for test
+		<div class="clearfix">
 			<div>
 				{{computedDate}}
 			</div>
 			<div>
 				{{typedDate}}
 			</div>
-		</div>-->
+		</div>
 	</div>
 </template>
 
@@ -104,7 +104,18 @@
 		computed: {
 			computedDate() {
 				let th = this;
-				return moment(th.typedDate, 'DD.MM.YYYY').format('MM.DD.YYYY');
+				// console.log(th.typedDate);
+				if (th.typedDate) {
+					return moment(th.typedDate, 'DD.MM.YYYY').toDate();
+				}
+				else {
+					// console.log(new Date());
+					return new Date();
+				}
+				
+				
+				
+				
 			}
 		},
 		components: {
@@ -113,7 +124,7 @@
 		methods: {
 			/* Date */
 			dateKeydown(e) {
-				console.log(e)
+				// console.log(e)
 				this.kde = e;
 			},
 			dateMaskinput(e) {
