@@ -167,11 +167,14 @@
 	.btn-datepicker:focus {
 		outline: none;
 	}
-
+	
 
 </style>
 
 <style lang="scss">
+	input::selection {
+	  background: transparent;
+	}
 	.vdp-datepicker {
 		position: absolute !important;
 		width: 100%;
