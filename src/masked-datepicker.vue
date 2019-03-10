@@ -1,28 +1,30 @@
 <template>
-	<div>
+	<div class="masket-datepicker">
 		<div class="input-group">
 			<input type="text"
-			       class="form-control"
+			       class="form-control masked-input"
+			       :class="inputClass"
 			       v-model="typedDate"
 			       placeholder="__.__.____"
 			       @keydown="dateKeydown($event)"
 			       @input="dateMaskinput($event)"
 			/>
 			<div class="input-group-append">
-				<div class="btn btn-outline-secondary btn-datepicker">
+				<div type="button" class="btn  btn-datepicker"><!-- btn-outline-secondary -->
 					<i class="far fa-calendar"></i>
 					<datepicker
 							@selected="dateSelected"
 							:language="curLang"
-							:monday-first="true  "
+							:monday-first="curMondayFirst"
 							format="MM.dd.yyyy"
 							:value="computedDate"
 							:disabledDates="state.disabledDates"
+							:highlighted="state.highlighted"
 					/>
 				</div>
 			</div>
 		</div>
-		 for test
+		 <!--for test
 		<div class="clearfix">
 			<div>
 				{{computedDate}}
@@ -30,12 +32,12 @@
 			<div>
 				{{typedDate}}
 			</div>
-		</div>
+		</div>-->
 	</div>
 </template>
 
 <script>
-	import AMask from './amask'                 // mask core module
+	import AMask from './a-mask'                 // mask core module
 	
 	/* VUEJS-DATEPICKER */
 	/* https://github.com/charliekassel/vuejs-datepicker */
@@ -49,18 +51,43 @@
 	};
 	const dateMask = new AMask(dateProps);
 	
+	function trueModelDate(d){
+		if ( !/\d\d\.\d\d\.\d\d\d\d/.test(d)) {
+			if ( moment(d).isValid() ) {
+				return moment(d).format('DD.MM.YYYY');
+			}
+			else {
+				// console.error('non valid date!');
+				return '';
+			}
+		}
+		else {
+			return d;
+		}
+	}
+	
 	export default {
 		name: 'masked-input',
+		model: {
+			prop: 'result',
+			event: 'choise'
+		},
 		props: {
+			result: String | Date,
 			lang: String,
 			state: Object,
+			// defaultData: String,
+			mondayFirst: Boolean,
+			inputClass: String,
 		},
 		data() {
 			return {
 				kde: null,
-				typedDate: '',
+				typedDate: trueModelDate(this.result),
+				// typedDate: this.state.defaultData || '',
 				curLang: this.lang === 'ru' ? ru : en,
-				
+				curMondayFirst: this.mondayFirst || true,
+
 				/* STATUS */
 				test: false, // TODO: remove
 			}
@@ -94,9 +121,8 @@
 						status = 'isAfterRange';
 					}
 				}
-					
-				// statuses.error = !(Object.entries(statuses).length === 0 && statuses.constructor === Object);
 				
+				this.$emit('choise',  this.typedDate);
 				this.$emit('chosen-date', this.typedDate);
 				this.$emit('statuses', status);
 			}
@@ -104,18 +130,13 @@
 		computed: {
 			computedDate() {
 				let th = this;
-				// console.log(th.typedDate);
-				if (th.typedDate) {
+				// return moment(th.typedDate, 'DD.MM.YYYY').format('MM.DD.YYYY'); // work only in chrome
+				if (th.typedDate && moment(this.typedDate, 'DD.MM.YYYY').isValid() ) {
 					return moment(th.typedDate, 'DD.MM.YYYY').toDate();
 				}
 				else {
-					// console.log(new Date());
 					return new Date();
 				}
-				
-				
-				
-				
 			}
 		},
 		components: {
@@ -146,36 +167,72 @@
 </script>
 
 <style scoped>
-	
-	.btn-datepicker {
+	.masket-datepicker .btn-datepicker {
 		position: relative;
 		background: #ddd;
 		white-space: normal;
-		color: #555555;
-		/*display: inline-block;*/
-		/*width: 29px;*/
-		/*height: 29px;*/
-		/*line-height: 29px;*/
-		/*padding: 0;*/
-		/*vertical-align: middle;*/
-		/*margin-left: -8px;*/
-		/*border: 1px solid #ccc;*/
-		/*border-radius: 4px;*/
-		/*font-size: 16px;*/
+		padding: 4px 8px;
 	}
-	
-	.btn-datepicker:focus {
+	.masket-datepicker .btn-datepicker:focus {
 		outline: none;
 	}
-	
 
 </style>
 
-<style lang="scss">
-	input::selection {
-	  background: transparent;
+<style>
+
+	/* MASKED DATEPICKER */
+	.masket-datepicker .vdp-datepicker input::-moz-selection {
+	    background: transparent;
+	    color: transparent;
 	}
-	.vdp-datepicker {
+	.masket-datepicker .vdp-datepicker input::selection {
+	    background: transparent;
+	    color: transparent;
+	}
+	.masket-datepicker .input-group {
+		position: relative;
+		display: flex;
+		/*flex-wrap: wrap;*/
+		align-items: stretch;
+		width: 100%;
+	}
+
+	.masket-datepicker .input-group > input[type='text']:not(:last-child) {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+
+	.masket-datepicker .input-group-prepend,
+	.masket-datepicker .input-group-append {
+		display: flex;
+	}
+
+	.masket-datepicker .input-group-append {
+		margin-left: -1px;
+	}
+
+	.masket-datepicker .input-group > .input-group-append > .btn {
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+		border: 1px solid #cccccc;
+		background: #ededed;
+	}
+
+	.masket-datepicker .input-group > .input-group-append > input[type="text"] {
+		border: 0 none;
+	}
+
+	.masket-datepicker .far.fa-calendar {
+		display: inline-block;
+		width: 24px;
+		height: 24px;
+		vertical-align: top;
+		background: url('/images/forma/dateicon.png') 50% 50% no-repeat;
+	}
+
+
+	.masket-datepicker .vdp-datepicker {
 		position: absolute !important;
 		width: 100%;
 		height: 100%;
@@ -187,42 +244,92 @@
 		padding: 0;
 		border-width: 0;
 		cursor: pointer;
+		text-align: left;
 	}
-	
-	.vdp-datepicker input {
-		@extend .vdp-datepicker;
+	.masket-datepicker .vdp-datepicker:focus {
+		outline: none;
+	}
+	.masket-datepicker .vdp-datepicker input {
+		position: absolute !important;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: 0;
+		padding: 0;
+		border-width: 0;
+		cursor: pointer;
 		background: transparent;
 		color: transparent;
 	}
-	
-	.vdp-datepicker__calendar {
+
+	.masket-datepicker .vdp-datepicker__calendar {
 		position: absolute;
 		z-index: 100;
-		background: #fff;
-		width: 220px;
+		width: 315px;
 		border: 1px solid #ccc;
 		right: -1px;
 		top: -1px;
 		font-size: 14px;
-		padding: 0 5px 15px;
+		padding: 10px 10px 10px;
 		min-height: 172px;
+		background: #eee;
+		color: #000;
 	}
-	
-	.vdp-datepicker:focus {
-		outline: none;
+	.masket-datepicker header + div {
+		background: #fff;
 	}
-	
-	.vdp-datepicker__calendar .cell {
+
+
+	.masket-datepicker .vdp-datepicker__calendar header {
+		display: block;
+		line-height: 40px;
+	}
+
+	.masket-datepicker .vdp-datepicker__calendar .cell.day-header {
+		font-size: 100%;
+		white-space: nowrap;
+		cursor: inherit;
+	}
+
+	.masket-datepicker .vdp-datepicker__calendar .cell.day-header:nth-child(6),
+	.masket-datepicker .vdp-datepicker__calendar .cell.day-header:nth-child(7) {
+		color: rgb(226, 26, 26);
+	}
+	.masket-datepicker .vdp-datepicker__calendar .cell.weekend {
+		color: rgb(226, 26, 26);
+	}
+
+	.masket-datepicker .vdp-datepicker__calendar .cell {
 		padding: 0 5px;
-		height: 20px;
-		line-height: 20px;
-		
-		&.weekend {
-			color: red;
-		}
-		
-		&.selected {
-			background: #6be6ff;
-		}
+		height: 28px;
+		line-height: 28px;
 	}
+	.masket-datepicker .vdp-datepicker__calendar .cell.day,
+	.masket-datepicker .vdp-datepicker__calendar .cell.day-header {
+		border: 1px solid #eee;
+	}
+	.masket-datepicker .vdp-datepicker__calendar .cell.disabled {
+		color: grey;
+		opacity: 0.5;
+		filter: progid:DXImageTransform.Microsoft.Alpha(opacity = 50);
+	}
+
+	.masket-datepicker .vdp-datepicker__calendar .cell.month,
+	.masket-datepicker .vdp-datepicker__calendar .cell.year {
+		background: #fff;
+	}
+
+	.masket-datepicker .vdp-datepicker__calendar header span {
+		background: #eee;
+	}
+
+	.masket-datepicker .vdp-datepicker__calendar header .prev:not(.disabled):hover,
+	.masket-datepicker .vdp-datepicker__calendar header .next:not(.disabled):hover,
+	.masket-datepicker .vdp-datepicker__calendar header .up:not(.disabled):hover {
+		background: #fff;
+	}
+
 </style>

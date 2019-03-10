@@ -15,7 +15,9 @@ module.exports = {
 	mode: 'development',
 	context: PATH,
 	entry: {
-		index: ['./src/index.js', './src/app.js'],
+		purejs: './src/purejs.js',
+		app: './src/app.js',
+		mdpapp: './src/mdpapp.js'
 	},
 	output: {
 		filename: '[name]-bundle.js',
@@ -65,7 +67,7 @@ module.exports = {
 			// Options similar to the same options in webpackOptions.output
 			// both options are optional
 			// publicPath: '/css/',
-			filename: "main.css",
+			filename: "[name].css",
 		})
 	  ],
 	

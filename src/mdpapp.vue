@@ -1,33 +1,52 @@
 <template>
 	<div>
-		
 		<div class="row">
 			<div class="col-md-12">
-				<h2>VUE</h2>
-				<h3>Methods</h3>
+				<h1>Vue Component With Masked Datepicker</h1>
 			</div>
 		</div>
 		
+		<!--
+		MASKED DATEPICKER COMPONENTS
+		-->
 		<div class="row">
-			<div class="col-md-4">
-				<div class="form-group">
-					<input type="text"
-					       class="form-control"
-					       :placeholder="setPhonePlaceholder()"
-					       @keydown="phoneKeydown($event)"
-					       @input="phoneMaskinput($event)"
-					/>
+			<div class="col-md-8" :class="{'error': dateFromError}">
+				
+				<masked-datepicker
+						:lang="'ru'"
+						:monday-first="true"
+						:state="stateFrom"
+						:inputClass="'white-input'"
+						v-model="dateFrom"
+						@chosen-date="printFromResult"
+						@statuses="statusFromHandler"
+				/>
+				<div class="msg" v-show="dateFromError" v-html="dateFromErrorMsg"/>
+			
+			</div>
+				<div class="col-md-4">
+					<div>v-model dateFrom: {{dateFrom}}</div>
+					<div>fn dateFromResult: {{dateFromResult}}</div>
 				</div>
-			</div>
-			<div class="col-md-4">
-				{{phone}}
-			</div>
 		</div>
 		
 		<div class="row">
-			<div class="col-md-12">
-				<h3>Component</h3>
-				<a href="/mdp-app.html">Component With Datepicker >>></a>
+			<div class="col-md-8" :class="{'error': dateToError}">
+				<masked-datepicker
+						:lang="'ru'"
+						:monday-first="true"
+						:state="stateTo"
+						:inputClass="'white-input'"
+						v-model="dateTo"
+						@chosen-date="printToResult"
+						@statuses="statusToHandler"
+				/>
+				<div class="msg" v-show="dateToError" v-html="dateToErrorMsg"/>
+			</div>
+			
+			<div class="col-md-4">
+				<div>v-model dateTo: {{dateTo}}</div>
+				<div>fn dateToResult: {{dateToResult}}</div>
 			</div>
 		</div>
 		
@@ -68,27 +87,31 @@
 				/* ---------------------------------------------
 				 * MASKED METHODS
 				 * --------------------------------------------- */
-				result: '22.04.1991',
 				kde: null,
 				phone: '',
-				dateStart: '',
-				dateFinish: '',
-				dateFrom: '',
-				en: en,
-				ru: ru,
+				dateFrom: '22.04.2012',
+				dateTo: '',
+				dateFromResult: '22.04.2012',
+				dateToResult: '',
 				
-				dateError: false,
-				dateErrorMsg: '',
+				dateFromError: false,
+				dateFromErrorMsg: '',
+				dateToError: false,
+				dateToErrorMsg: '',
 				
 				/* MASKED DATEPICKER COMPONENT*/
 				maskedDatepickerResult: '',
 				lang: 'ru',
-			
-				dateFromState: {
-					to: new Date(2018, 0, 25), // Disable all dates up to specific date
-					from: new Date(2019, 2, 22), // Disable all dates after specific date
-				}
-			
+				stateFrom: {
+					disabledDates: {
+						from: new Date(2019, 2, 15), // Disable all dates up to specific date
+					}
+				},
+				stateTo: {
+					disabledDates: {
+						to: new Date(), // Disable all dates after specific date
+					}
+				},
 			}
 		},
 		computed: {
@@ -146,102 +169,69 @@
 			/* ---------------------------------------------
 			 * MASKED DATEPICKER COMPONENT
 			 * --------------------------------------------- */
-			printResult(result){
-				this.maskedDatepickerResult = result;
+			printFromResult(result){
+				this.dateFromResult = result;
 			},
-			statusHandler(status){
-				this.dateError = !!status;
-				this.dateErrorMsg = status ? MESSAGES.ru[status] : '';
+			printToResult(result){
+				this.dateToResult = result;
+			},
+			statusFromHandler(status){
+				this.dateFromError = !!status;
+				this.dateFromErrorMsg = status ? MESSAGES.ru[status] : '';
+			},
+			statusToHandler(status){
+				this.dateToError = !!status;
+				this.dateToErrorMsg = status ? MESSAGES.ru[status] : '';
 			}
 		}
 	}
 </script>
 
 <style scoped>
-	
-	.btn-datepicker {
-		position: relative;
-		background: #ddd;
-		white-space: normal;
-		color: #555555;
+	.row {
+		margin-bottom: 20px;
+	}
+	.msg {
+		padding: 20px 0;
 	}
 	
-	.btn-datepicker:focus {
-		outline: none;
-	}
-	
-
 </style>
 
 <style lang="scss">
-	/* REWRIGHT */
-	.masket-datepicker .far.fa-calendar {
-		background: none !important;
-		padding-top: 6px;
-	}
-	
-	.form-control:focus {
-		color: #495057;
-		background-color: #fff;
-		border-color: #ccc;
-		outline: 0;
-		box-shadow: 0 0 0 0 transparent;
-	}
-	
-	.vdp-datepicker {
-		position: absolute !important;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		margin: 0;
-		padding: 0;
-		border-width: 0;
-		cursor: pointer;
-	}
-	.vdp-datepicker input {
-		@extend .vdp-datepicker;
-		background: transparent;
-		color: transparent;
-	}
-	
-	.vdp-datepicker__calendar {
-		position: absolute;
-		z-index: 100;
-		background: #fff;
-		width: 220px;
-		border: 1px solid #ccc;
-		right: -1px;
-		top: -1px;
+	.form-control {
+		min-width: 280px;
 		font-size: 14px;
-		padding: 0px 5px 15px;
-		min-height: 172px;
-	}
-
-	.vdp-datepicker:focus {
-		outline: none;
-	}
-	.vdp-datepicker__calendar .cell {
-		padding: 0 5px;
-		height: 20px;
-		line-height: 20px;
-		
-		&.weekend {
-			color: red;
-		}
-		&.selected {
-			background: #6be6ff;
-		}
+		padding: 4px 8px;
 	}
 	
-	.error {
-		input.form-control {
-			border: 1px solid #c00;
-		}
-		.msg {
-			color: #c00;
-		}
+	.container {
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-right: auto;
+		margin-left: auto;
+	}
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin-right: -15px;
+		margin-left: -15px;
+	}
+	.col-md-4,
+	.col-md-12 {
+		position: relative;
+		width: 100%;
+		min-height: 1px;
+		padding-right: 15px;
+		padding-left: 15px;
+	}
+	.col-md-4 {
+		flex: 0 0 33.33333%;
+		max-width: 33.33333%;
+	}
+	.col-md-12 {
+		flex: 0 0 100%;
+		max-width: 100%;
 	}
 </style>
+

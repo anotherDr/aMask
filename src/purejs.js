@@ -1,6 +1,6 @@
 
-import '../sass/main.scss'
-import AMask from './amask'
+import '../sass/purejs.scss'
+import AMask from './a-mask'
 
 console.log(AMask.version());
 

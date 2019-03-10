@@ -4,7 +4,7 @@
  */
 // @ts-check
 'use strict';
-const version = '0.7.2';
+const version = '1.0.9';
 const defaultOptions = {
 	pattern: '99.99.9999',
 	placeholder: '_',
@@ -136,13 +136,14 @@ export default class AMask {    // A Mask
 		// if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
 		// 	return {output: value, cursorPosition: positionStart};
 		// }
-		
-		if (kde.key === 'Backspace'  ||
-			kde.key === 'ArrowLeft'  ||
-			kde.key === 'ArrowUp'    ||
-			kde.key === 'ArrowRight' ||
-			kde.key === 'ArrowDown' ) {
-			return {output: value, cursorPosition: position};
+		if (kde) {
+			if (kde.key === 'Backspace'  ||
+				kde.key === 'ArrowLeft'  ||
+				kde.key === 'ArrowUp'    ||
+				kde.key === 'ArrowRight' ||
+				kde.key === 'ArrowDown' ) {
+				return {output: value, cursorPosition: position};
+			}
 		}
 		
 		output = th.calcOutputValue(value);
