@@ -57,6 +57,10 @@ export default class AMask {    // A Mask
 		this.prepareBuffer();
 		return this.bufferArr.join('');
 	}
+	
+	/**
+	 * method add new char to the string in proper position
+	 */
 	addItem (key, position) {
 		let th = this;
 		
@@ -76,8 +80,13 @@ export default class AMask {    // A Mask
 			th.cursorPosition = position;
 		}
 	}
-	
+	/**
+	 * method react to keydown and return new string and new cursor position
+	 */
 	onKeyDownHandler(e){
+		if( (e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V')) {
+			return;
+		}
 		e.preventDefault();
 		
 		let th = this,
@@ -141,6 +150,33 @@ export default class AMask {    // A Mask
 		return {output, cursor};
 	}
 	
+	onPasteHandler(e){
+		let th = this,
+			pastedText = '',
+			clearText,
+			textArr;
+		
+		if (window.clipboardData && window.clipboardData.getData) {     // IE
+			pastedText = window.clipboardData.getData('Text');
+		} else if (e.clipboardData && e.clipboardData.getData) {
+			pastedText = e.clipboardData.getData('text/plain');
+		}
+		
+		clearText = pastedText.replace(/[^\d]/,' ');
+		textArr = clearText.split('');
+		
+		console.log('pasted: ' , textArr );
+		
+		function stringHandler(textArr, position = -1) {
+			let char;
+			if (textArr.length > 0) {
+				char = textArr.shift();
+				th.addItem (char, position + 1);
+			}
+		}
+		stringHandler(textArr);
+	}
+	
 	
 	/* -----------------------------------------------------
 	 *  METHODS for vanilla js
@@ -156,6 +192,7 @@ export default class AMask {    // A Mask
 		inputElements.forEach((elem) => {
 			elem.setAttribute('placeholder', this.setPlaceholder());
 			elem.addEventListener('keydown', (e) => this.onKeyDownHandler(e));
+			elem.addEventListener('paste', (e) => this.onPasteHandler(e));
 		});
 	}
 }
